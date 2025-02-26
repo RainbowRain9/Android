@@ -1,0 +1,47 @@
+{
+    "git.ignoreLimitWarning": true,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.completion.importOrder": [
+        "android",
+        "androidx",
+        "com",
+        "junit",
+        "net",
+        "org",
+        "java",
+        "javax"
+    ],
+    "kotlin.languageServer.enabled": true,
+    "kotlin.debugAdapter.enabled": true,
+    "kotlin.trace.server": "messages",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+    "java.format.settings.profile": "GoogleStyle",
+    "terminal.integrated.env.linux": {
+        "ANDROID_HOME": "/Users/Administrator/Library/Android/sdk",
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
+    },
+    "terminal.integrated.env.osx": {
+        "ANDROID_HOME": "/Users/Administrator/Library/Android/sdk",
+        "JAVA_HOME": "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
+    },
+    "terminal.integrated.env.windows": {
+        "ANDROID_HOME": "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk",
+        "JAVA_HOME": "C:\\Program Files\\Java\\jdk-21"
+    },
+    "java.home": "C:\\Program Files\\Java\\jdk-21",
+    "java.import.gradle.java.home": "C:\\Program Files\\Java\\jdk-21",
+    "java.import.gradle.user.home": "C:\\Users\\蔡志源\\.gradle",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "C:\\Program Files\\Java\\jdk-21"
+        }
+    ],
+    "android.sdk.path": "D:\\Users\\AppData\\Local\\Android\\SDK"
+}

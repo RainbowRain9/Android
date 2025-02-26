@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "构建并运行Android应用",
+            "type": "shell",
+            "command": "./gradlew installDebug",
+            "windows": {
+                "command": ".\\gradlew.bat installDebug"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
