@@ -12,6 +12,17 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Open in Android Studio",
+            "type": "shell",
+            "command": "${env:ANDROID_STUDIO}",
+        "args": [
+                "${file}"
+            ],
+            "presentation": {
+                "reveal": "never"
+            }
         }
     ]
 }
