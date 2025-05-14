@@ -1,7 +1,7 @@
 package com.example.android01;
 
 // 导入所需的Android和Java类
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,7 +11,6 @@ import com.example.android01.data.AppDatabase;
 import com.example.android01.data.User;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import android.content.Intent;
 
 /**
  * 主活动类，处理用户登录和注册功能
@@ -91,31 +90,18 @@ public class MainActivity extends AppCompatActivity {
                     // 登录成功，显示提示信息
                     Toast.makeText(MainActivity.this, "登录成功!", Toast.LENGTH_SHORT).show();
 
-                    // 创建跳转到成功页面的Intent
-                    Intent intent = new Intent(MainActivity.this, SuccessActivity.class);
-
-                    // 使用隐式Intent跳转
-                    Intent intent2 = new Intent();
-
-                    // 配置属性
-                    intent2.setAction(Intent.ACTION_DIAL);
-
-                    // category
-                    intent2.addCategory(Intent.CATEGORY_DEFAULT);
-
-                    // data==url
-
-                    String url = "http://www.test.com:8083/text";
-                    String url2 = "http://www.baidu.com";
-                    String url3 = "tel:10086";
-
-                    Uri uri = Uri.parse(url3);
-
-                    intent2.setData(uri);
-
-                    // 启动成功页面
-                    startActivity(intent2);
-
+                    // 创建跳转到主界面的Intent
+                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    
+                    // 将用户名传递给主界面
+                    intent.putExtra("username", username);
+                    
+                    // 启动主界面
+                    startActivity(intent);
+                    
+                    // 结束当前Activity，防止用户按返回键回到登录界面
+                    finish();
+                    
                     // 清空输入框
                     clearInputs();
                 } else {

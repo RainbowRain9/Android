@@ -48,5 +48,6 @@
     "files.exclude": {
         "**/.gradle": true,
         "**/.idea": true
-    }
+    },
+    "java.errors.incompleteClasspath.severity": "ignore"
 }
