@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 顶部应用栏 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_diary_editor"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="新日记"
+            app:titleTextColor="@android:color/white"
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- 主要内容区域 -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 日期选择器 -->
+            <LinearLayout
+                android:id="@+id/ll_date_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    android:contentDescription="日期" />
+
+                <TextView
+                    android:id="@+id/tv_diary_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2023年5月15日"
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- 标题输入框 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="标题">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_diary_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 日记类型选择器 -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_diary_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:tabMode="scrollable">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="标准文本" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="感恩日记" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="梦境记录" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AI反思" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="对话记录" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <!-- 富文本编辑器工具栏 -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btn_format_bold"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        android:contentDescription="粗体"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <ImageButton
+                        android:id="@+id/btn_format_italic"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        android:contentDescription="斜体"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <ImageButton
+                        android:id="@+id/btn_format_underline"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        android:contentDescription="下划线"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/darker_gray"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_format_bullet_list"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        android:contentDescription="无序列表"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <ImageButton
+                        android:id="@+id/btn_format_numbered_list"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        android:contentDescription="有序列表"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/darker_gray"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp" />
+
+                    <ImageButton
+                        android:id="@+id/btn_insert_image"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_gallery"
+                        android:contentDescription="插入图片"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <ImageButton
+                        android:id="@+id/btn_insert_link"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_share"
+                        android:contentDescription="插入链接"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- 内容编辑区域 -->
+            <EditText
+                android:id="@+id/et_diary_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="200dp"
+                android:gravity="top|start"
+                android:background="@null"
+                android:hint="在这里写下你的日记内容..."
+                android:inputType="textMultiLine"
+                android:layout_marginBottom="16dp" />
+
+            <!-- AI辅助工具栏 -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_ai_generate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="内容生成"
+                        android:drawableStart="@android:drawable/ic_menu_edit"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <Button
+                        android:id="@+id/btn_ai_improve"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="内容改进"
+                        android:drawableStart="@android:drawable/ic_menu_edit"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <Button
+                        android:id="@+id/btn_ai_summarize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="生成摘要"
+                        android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <Button
+                        android:id="@+id/btn_ai_template"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="使用模板"
+                        android:drawableStart="@android:drawable/ic_menu_agenda"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- 心情选择器 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="心情"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:scrollbars="none">
+
+                <RadioGroup
+                    android:id="@+id/rg_mood"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb_mood_happy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="开心"
+                        android:drawableTop="@android:drawable/ic_menu_day"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_mood_sad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="难过"
+                        android:drawableTop="@android:drawable/ic_menu_day"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_mood_angry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="生气"
+                        android:drawableTop="@android:drawable/ic_menu_day"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_mood_excited"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="兴奋"
+                        android:drawableTop="@android:drawable/ic_menu_day"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_mood_calm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="平静"
+                        android:drawableTop="@android:drawable/ic_menu_day"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </RadioGroup>
+            </HorizontalScrollView>
+
+            <!-- 标签输入/选择器 -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="标签（用逗号分隔）">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_diary_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 封面图片选择 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="封面图片"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <FrameLayout
+                android:id="@+id/fl_cover_image"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="16dp"
+                android:background="@android:color/darker_gray">
+
+                <ImageView
+                    android:id="@+id/iv_cover_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="封面图片" />
+
+                <Button
+                    android:id="@+id/btn_add_cover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="添加封面"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <!-- 附件区域 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="附件"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/ll_attachments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btn_add_attachment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="添加附件"
+                    android:drawableStart="@android:drawable/ic_menu_add" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 底部保存按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_save_diary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_menu_save"
+        android:contentDescription="保存" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

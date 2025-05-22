@@ -33,6 +33,19 @@
 
         <activity android:name="com.example.android01.HomeActivity" android:exported="true">
         </activity>
+
+        <!-- AI日记App新增Activity -->
+        <activity android:name="com.example.android01.DiaryEditorActivity" android:exported="false">
+        </activity>
+
+        <activity android:name="com.example.android01.DiaryListActivity" android:exported="false">
+        </activity>
+
+        <activity android:name="com.example.android01.AIChatActivity" android:exported="false">
+        </activity>
+
+        <activity android:name="com.example.android01.SettingsActivity" android:exported="false">
+        </activity>
     </application>
 
 </manifest>
