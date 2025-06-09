@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记App - 页面导航演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .nav-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .nav-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 16px;
+        }
+        
+        .tab-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .tab-secondary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .tab-accent { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        
+        .connection-line {
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+            height: 2px;
+            z-index: 1;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-white mb-4">AI日记App</h1>
+            <p class="text-white/80 text-lg">页面导航结构演示</p>
+            <div class="mt-6">
+                <a href="index.html" class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-all duration-300">
+                    <i class="fas fa-eye mr-2"></i>
+                    查看完整原型
+                </a>
+            </div>
+        </div>
+        
+        <!-- 5个核心Tab页面 -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold text-white mb-8 text-center slide-in">5个核心Tab页面</h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <!-- 首页 -->
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('dashboard.html')">
+                    <div class="nav-icon tab-primary">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">首页</h3>
+                    <p class="text-sm text-gray-600 mb-4">数据概览<br>快速操作</p>
+                    <div class="text-xs text-blue-600 font-medium">dashboard.html</div>
+                </div>
+                
+                <!-- 记本 -->
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('notebooks.html')" style="animation-delay: 0.1s">
+                    <div class="nav-icon tab-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">记本</h3>
+                    <p class="text-sm text-gray-600 mb-4">统一记本管理<br>6种类型</p>
+                    <div class="text-xs text-blue-600 font-medium">notebooks.html</div>
+                </div>
+                
+                <!-- AI助手 -->
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('ai-chat.html')" style="animation-delay: 0.2s">
+                    <div class="nav-icon tab-primary">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">AI助手</h3>
+                    <p class="text-sm text-gray-600 mb-4">智能对话<br>内容生成</p>
+                    <div class="text-xs text-blue-600 font-medium">ai-chat.html</div>
+                </div>
+                
+                <!-- 搜索 -->
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('search.html')" style="animation-delay: 0.3s">
+                    <div class="nav-icon tab-primary">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">搜索</h3>
+                    <p class="text-sm text-gray-600 mb-4">全文搜索<br>历史记录</p>
+                    <div class="text-xs text-blue-600 font-medium">search.html</div>
+                </div>
+                
+                <!-- 我的 -->
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('settings.html')" style="animation-delay: 0.4s">
+                    <div class="nav-icon tab-primary">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">我的</h3>
+                    <p class="text-sm text-gray-600 mb-4">个人设置<br>数据分析</p>
+                    <div class="text-xs text-blue-600 font-medium">settings.html</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 子页面跳转 -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold text-white mb-8 text-center slide-in">子页面跳转关系</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 从记本跳转 -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 slide-in">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-book mr-3"></i>
+                        从记本Tab跳转
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="nav-card p-4 fade-in" onclick="openPage('contacts.html')">
+                            <div class="flex items-center">
+                                <div class="nav-icon tab-secondary w-12 h-12 mr-4" style="margin: 0;">
+                                    <i class="fas fa-users text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800">人际关系页</h4>
+                                    <p class="text-sm text-gray-600">人脉管理、关系分析</p>
+                                    <div class="text-xs text-green-600 font-medium">contacts.html</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-card p-4 fade-in" onclick="openPage('diary-create.html')" style="animation-delay: 0.1s">
+                            <div class="flex items-center">
+                                <div class="nav-icon tab-secondary w-12 h-12 mr-4" style="margin: 0;">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800">日记创建页</h4>
+                                    <p class="text-sm text-gray-600">AI辅助写作、富文本编辑</p>
+                                    <div class="text-xs text-green-600 font-medium">diary-create.html</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 从我的跳转 -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 slide-in" style="animation-delay: 0.2s">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-user mr-3"></i>
+                        从我的Tab跳转
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="nav-card p-4 fade-in">
+                            <div class="flex items-center">
+                                <div class="nav-icon tab-accent w-12 h-12 mr-4" style="margin: 0;" onclick="openPage('analytics.html')">
+                                    <i class="fas fa-chart-line text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800">数据分析页</h4>
+                                    <p class="text-sm text-gray-600">统计图表、洞察分析</p>
+                                    <div class="text-xs text-orange-600 font-medium">analytics.html</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 独立功能页面 -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold text-white mb-8 text-center slide-in">独立功能页面</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('lists.html')">
+                    <div class="nav-icon tab-accent">
+                        <i class="fas fa-list-ul"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">清单管理</h3>
+                    <p class="text-sm text-gray-600 mb-4">待办清单<br>进度追踪</p>
+                    <div class="text-xs text-orange-600 font-medium">lists.html</div>
+                </div>
+                
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('content-history.html')" style="animation-delay: 0.1s">
+                    <div class="nav-icon tab-accent">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">历史记录</h3>
+                    <p class="text-sm text-gray-600 mb-4">内容浏览<br>时间轴视图</p>
+                    <div class="text-xs text-orange-600 font-medium">content-history.html</div>
+                </div>
+                
+                <div class="nav-card p-6 text-center fade-in" onclick="openPage('features-showcase.html')" style="animation-delay: 0.2s">
+                    <div class="nav-icon tab-accent">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">功能展示</h3>
+                    <p class="text-sm text-gray-600 mb-4">特色功能<br>演示页面</p>
+                    <div class="text-xs text-orange-600 font-medium">features-showcase.html</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 返回按钮 -->
+        <div class="text-center fade-in">
+            <a href="index.html" class="inline-flex items-center px-8 py-4 bg-white text-gray-800 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg">
+                <i class="fas fa-arrow-left mr-3"></i>
+                返回完整原型展示
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function openPage(filename) {
+            window.open(filename, '_blank');
+        }
+        
+        // 添加页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.nav-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .chat-container {
+            height: calc(100vh - 140px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .message-ai {
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message-bubble-user {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message-bubble-ai {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ai-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 80px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .input-container {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+        
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            resize: none;
+            max-height: 100px;
+            min-height: 20px;
+            line-height: 20px;
+            padding: 8px 0;
+        }
+        
+        .send-button {
+            width: 32px;
+            height: 32px;
+            background: #007AFF;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .send-button:hover {
+            background: #0051D5;
+            transform: scale(1.05);
+        }
+        
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .voice-button {
+            width: 32px;
+            height: 32px;
+            background: #34C759;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .voice-button:hover {
+            background: #28A745;
+            transform: scale(1.05);
+        }
+        
+        .voice-button.recording {
+            background: #FF3B30;
+            animation: pulse 1s infinite;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #007AFF;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-action:hover {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .suggestion-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-button:hover {
+            background: #0051D5;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- 顶部导航 -->
+        <div class="bg-white border-b border-gray-200 p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="ai-avatar mr-3">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold text-gray-800">AI日记助手</h1>
+                        <div class="text-sm text-green-600">在线</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-cog text-gray-600"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-trash text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 聊天消息区域 -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- AI欢迎消息 -->
+            <div class="message message-ai">
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-bubble message-bubble-ai">
+                    <div class="font-medium mb-1">你好！我是你的AI日记助手 👋</div>
+                    <div class="text-sm text-gray-600 mb-2">我可以帮助你：</div>
+                    <div class="text-sm text-gray-600">
+                        • 记录和整理日记内容<br>
+                        • 提供写作灵感和建议<br>
+                        • 分析情感和心情变化<br>
+                        • 管理人际关系和提醒<br>
+                        • 创建和管理待办清单
+                    </div>
+                    <div class="suggestion-buttons">
+                        <button class="suggestion-button" onclick="sendQuickMessage('帮我写今天的日记')">写日记</button>
+                        <button class="suggestion-button" onclick="sendQuickMessage('创建一个新的待办清单')">建清单</button>
+                        <button class="suggestion-button" onclick="sendQuickMessage('分析我最近的心情变化')">心情分析</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 用户消息示例 -->
+            <div class="message message-user">
+                <div class="message-bubble message-bubble-user">
+                    今天心情不太好，工作上遇到了一些挫折，不知道该怎么记录这种感受...
+                </div>
+            </div>
+            
+            <!-- AI回复示例 -->
+            <div class="message message-ai">
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-bubble message-bubble-ai">
+                    <div class="mb-2">我理解你现在的感受。工作挫折确实会影响心情，但记录下来是很好的处理方式。让我帮你整理一下思路：</div>
+                    
+                    <div class="bg-blue-50 rounded-lg p-3 mb-3">
+                        <div class="font-medium text-blue-800 mb-2">📝 建议的日记结构：</div>
+                        <div class="text-sm text-blue-700">
+                            1. <strong>事件描述</strong>：具体发生了什么？<br>
+                            2. <strong>情感反应</strong>：你的真实感受<br>
+                            3. <strong>深层思考</strong>：为什么会有这种感受？<br>
+                            4. <strong>收获启发</strong>：能从中学到什么？<br>
+                            5. <strong>未来行动</strong>：下次如何应对？
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-gray-600 mb-2">你想从哪个部分开始？我可以引导你一步步完成。</div>
+                    
+                    <div class="suggestion-buttons">
+                        <button class="suggestion-button" onclick="sendQuickMessage('先描述具体发生的事情')">描述事件</button>
+                        <button class="suggestion-button" onclick="sendQuickMessage('直接表达我的感受')">表达感受</button>
+                        <button class="suggestion-button" onclick="sendQuickMessage('我想要一些写作灵感')">写作灵感</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 打字指示器（默认隐藏） -->
+            <div class="message message-ai" id="typingIndicator" style="display: none;">
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="typing-indicator">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-container">
+            <!-- 快速操作 -->
+            <div class="quick-actions">
+                <button class="quick-action" onclick="sendQuickMessage('帮我写日记')">
+                    <i class="fas fa-pen mr-1"></i>写日记
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('创建清单')">
+                    <i class="fas fa-list mr-1"></i>建清单
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('分析心情')">
+                    <i class="fas fa-heart mr-1"></i>心情分析
+                </button>
+                <button class="quick-action" onclick="sendQuickMessage('人际建议')">
+                    <i class="fas fa-users mr-1"></i>人际建议
+                </button>
+            </div>
+            
+            <!-- 输入框 -->
+            <div class="input-wrapper">
+                <button class="voice-button" id="voiceButton" onclick="toggleVoiceRecording()">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="输入消息或点击语音按钮..."
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                    oninput="adjustTextareaHeight(this)"></textarea>
+                <button class="send-button" id="sendButton" onclick="sendMessage()" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let isRecording = false;
+        let isTyping = false;
+        
+        // 调整文本框高度
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+            
+            // 更新发送按钮状态
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = textarea.value.trim() === '';
+        }
+        
+        // 处理键盘事件
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '' || isTyping) return;
+            
+            // 添加用户消息
+            addMessage(message, 'user');
+            
+            // 清空输入框
+            input.value = '';
+            input.style.height = 'auto';
+            document.getElementById('sendButton').disabled = true;
+            
+            // 显示AI正在输入
+            showTypingIndicator();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                hideTypingIndicator();
+                generateAIResponse(message);
+            }, 1500 + Math.random() * 1000);
+        }
+        
+        // 快速发送消息
+        function sendQuickMessage(message) {
+            const input = document.getElementById('messageInput');
+            input.value = message;
+            adjustTextareaHeight(input);
+            sendMessage();
+        }
+        
+        // 添加消息到聊天
+        function addMessage(content, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="message-bubble message-bubble-user">
+                        ${content}
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble message-bubble-ai">
+                        ${content}
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // 显示打字指示器
+        function showTypingIndicator() {
+            isTyping = true;
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'flex';
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // 隐藏打字指示器
+        function hideTypingIndicator() {
+            isTyping = false;
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+        
+        // 生成AI回复
+        function generateAIResponse(userMessage) {
+            const responses = [
+                "我理解你的想法。让我帮你整理一下思路，我们可以从以下几个角度来记录：",
+                "这是一个很好的话题！我建议你可以这样开始写作：",
+                "根据你的描述，我感受到了你的情感变化。让我们一起深入探讨一下：",
+                "我来帮你分析一下这个情况，并提供一些建议：",
+                "这确实是值得记录的重要时刻。我们可以从这些方面来展开："
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            
+            let fullResponse = randomResponse;
+            
+            // 根据用户消息内容添加相关建议
+            if (userMessage.includes('日记') || userMessage.includes('写')) {
+                fullResponse += `
+                    <div class="bg-green-50 rounded-lg p-3 mt-3">
+                        <div class="font-medium text-green-800 mb-2">💡 写作建议：</div>
+                        <div class="text-sm text-green-700">
+                            • 从具体的场景开始描述<br>
+                            • 记录当时的真实感受<br>
+                            • 思考事件的意义和启发<br>
+                            • 展望未来的行动计划
+                        </div>
+                    </div>
+                `;
+            } else if (userMessage.includes('清单') || userMessage.includes('任务')) {
+                fullResponse += `
+                    <div class="bg-blue-50 rounded-lg p-3 mt-3">
+                        <div class="font-medium text-blue-800 mb-2">📋 清单建议：</div>
+                        <div class="text-sm text-blue-700">
+                            • 按优先级排序任务<br>
+                            • 设置合理的截止时间<br>
+                            • 将大任务分解为小步骤<br>
+                            • 定期回顾和调整
+                        </div>
+                    </div>
+                `;
+            } else if (userMessage.includes('心情') || userMessage.includes('情感')) {
+                fullResponse += `
+                    <div class="bg-purple-50 rounded-lg p-3 mt-3">
+                        <div class="font-medium text-purple-800 mb-2">💜 情感分析：</div>
+                        <div class="text-sm text-purple-700">
+                            • 识别情感的具体类型<br>
+                            • 探索情感产生的原因<br>
+                            • 接纳并理解自己的感受<br>
+                            • 寻找积极的应对方式
+                        </div>
+                    </div>
+                `;
+            }
+            
+            addMessage(fullResponse, 'ai');
+        }
+        
+        // 语音录制切换
+        function toggleVoiceRecording() {
+            const voiceButton = document.getElementById('voiceButton');
+            const icon = voiceButton.querySelector('i');
+            
+            if (!isRecording) {
+                // 开始录制
+                isRecording = true;
+                voiceButton.classList.add('recording');
+                icon.className = 'fas fa-stop';
+                
+                // 模拟录制过程
+                setTimeout(() => {
+                    stopVoiceRecording();
+                    // 模拟语音转文字
+                    const input = document.getElementById('messageInput');
+                    input.value = '这是通过语音输入的消息示例';
+                    adjustTextareaHeight(input);
+                }, 3000);
+            } else {
+                stopVoiceRecording();
+            }
+        }
+        
+        // 停止语音录制
+        function stopVoiceRecording() {
+            isRecording = false;
+            const voiceButton = document.getElementById('voiceButton');
+            const icon = voiceButton.querySelector('i');
+            
+            voiceButton.classList.remove('recording');
+            icon.className = 'fas fa-microphone';
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('messageInput');
+            input.focus();
+        });
+    </script>
+</body>
+</html>

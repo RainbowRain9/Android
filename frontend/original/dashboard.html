@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主仪表盘</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-orange {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+        }
+        
+        .gradient-green {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        }
+        
+        .gradient-purple {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .mood-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 欢迎区域 -->
+    <div class="card p-6 mb-4 gradient-bg text-white fade-in">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-1">早安，小明 👋</h1>
+                <p class="text-white/80">今天是美好的一天，开始记录吧</p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm opacity-80">2024年3月15日</div>
+                <div class="text-sm opacity-80">星期五</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 快速操作 -->
+    <div class="grid grid-cols-3 gap-3 mb-6">
+        <button class="card p-4 hover-scale text-center">
+            <div class="w-12 h-12 gradient-orange rounded-full flex items-center justify-center mx-auto mb-2">
+                <i class="fas fa-book text-white text-lg"></i>
+            </div>
+            <div class="font-medium text-gray-800">日记记本</div>
+            <div class="text-xs text-gray-500 mt-1">记录生活点滴</div>
+        </button>
+
+        <button class="card p-4 hover-scale text-center">
+            <div class="w-12 h-12 gradient-green rounded-full flex items-center justify-center mx-auto mb-2">
+                <i class="fas fa-tasks text-white text-lg"></i>
+            </div>
+            <div class="font-medium text-gray-800">任务记本</div>
+            <div class="text-xs text-gray-500 mt-1">管理待办事项</div>
+        </button>
+
+        <button class="card p-4 hover-scale text-center">
+            <div class="w-12 h-12 gradient-purple rounded-full flex items-center justify-center mx-auto mb-2">
+                <i class="fas fa-users text-white text-lg"></i>
+            </div>
+            <div class="font-medium text-gray-800">人脉记本</div>
+            <div class="text-xs text-gray-500 mt-1">记录人际关系</div>
+        </button>
+    </div>
+    
+    <!-- AI每日灵感 -->
+    <div class="card p-4 mb-4 fade-in">
+        <div class="flex items-center mb-3">
+            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-lightbulb text-purple-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800">AI每日灵感</h3>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-3">
+            <p class="text-gray-700 text-sm leading-relaxed">
+                "今天不妨回想一下最近让你感到骄傲的一件小事，记录下当时的感受和收获。"
+            </p>
+        </div>
+        <button class="text-purple-600 text-sm font-medium mt-2">
+            <i class="fas fa-arrow-right mr-1"></i>开始写作
+        </button>
+    </div>
+    
+    <!-- 我的记本 -->
+    <div class="card p-4 mb-4 fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">我的记本</h3>
+            <button class="text-blue-600 text-sm">管理记本</button>
+        </div>
+
+        <div class="space-y-3">
+            <!-- 日记记本 -->
+            <div class="border-l-4 border-orange-500 pl-3 py-2 bg-orange-50 rounded-r-lg">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-book text-orange-600 mr-2"></i>
+                        <h4 class="font-medium text-gray-800 text-sm">我的日记</h4>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500">23篇</span>
+                        <span class="text-xs text-gray-500">3月14日</span>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-xs leading-relaxed">
+                    记录生活的点点滴滴，今天写了关于春日漫步的感悟...
+                </p>
+                <div class="flex gap-1 mt-2">
+                    <span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full">日记类型</span>
+                    <span class="bg-yellow-100 text-yellow-600 text-xs px-2 py-1 rounded-full">最近活跃</span>
+                </div>
+            </div>
+
+            <!-- 任务记本 -->
+            <div class="border-l-4 border-green-500 pl-3 py-2 bg-green-50 rounded-r-lg">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-tasks text-green-600 mr-2"></i>
+                        <h4 class="font-medium text-gray-800 text-sm">工作任务</h4>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500">8/15 完成</span>
+                        <span class="text-xs text-gray-500">今天</span>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-xs leading-relaxed">
+                    管理工作相关的任务和目标，当前进度良好...
+                </p>
+                <div class="flex gap-1 mt-2">
+                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">任务类型</span>
+                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">53% 完成</span>
+                </div>
+            </div>
+
+            <!-- 人脉记本 -->
+            <div class="border-l-4 border-purple-500 pl-3 py-2 bg-purple-50 rounded-r-lg">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-users text-purple-600 mr-2"></i>
+                        <h4 class="font-medium text-gray-800 text-sm">朋友圈子</h4>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500">23人</span>
+                        <span class="text-xs text-gray-500">2天前</span>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-xs leading-relaxed">
+                    记录与朋友们的互动，李雷生日快到了，需要准备礼物...
+                </p>
+                <div class="flex gap-1 mt-2">
+                    <span class="bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">人脉类型</span>
+                    <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">有提醒</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 清单概览 -->
+    <div class="card p-4 mb-4 fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">我的清单</h3>
+            <button class="text-blue-600 text-sm">管理清单</button>
+        </div>
+        
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-briefcase text-blue-600"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800 text-sm">工作任务</div>
+                        <div class="text-xs text-gray-500">3/8 已完成</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="w-12 h-12 relative">
+                        <svg class="w-12 h-12 progress-ring">
+                            <circle cx="24" cy="24" r="20" stroke="#e5e7eb" stroke-width="4" fill="transparent"/>
+                            <circle cx="24" cy="24" r="20" stroke="#3b82f6" stroke-width="4" fill="transparent"
+                                    stroke-dasharray="47.1 125.6" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-600">
+                            38%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-heart text-green-600"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800 text-sm">健康目标</div>
+                        <div class="text-xs text-gray-500">7/10 已完成</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="w-12 h-12 relative">
+                        <svg class="w-12 h-12 progress-ring">
+                            <circle cx="24" cy="24" r="20" stroke="#e5e7eb" stroke-width="4" fill="transparent"/>
+                            <circle cx="24" cy="24" r="20" stroke="#10b981" stroke-width="4" fill="transparent"
+                                    stroke-dasharray="87.9 125.6" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-green-600">
+                            70%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 人脉提醒 -->
+    <div class="card p-4 mb-4 fade-in">
+        <div class="flex items-center mb-3">
+            <div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-users text-pink-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800">人脉提醒</h3>
+        </div>
+        
+        <div class="space-y-2">
+            <div class="flex items-center p-2 bg-yellow-50 rounded-lg">
+                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                     class="w-8 h-8 rounded-full mr-3" alt="头像">
+                <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-800">李雷生日</div>
+                    <div class="text-xs text-gray-500">还有2天 - 3月17日</div>
+                </div>
+                <i class="fas fa-birthday-cake text-yellow-600"></i>
+            </div>
+            
+            <div class="flex items-center p-2 bg-blue-50 rounded-lg">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                     class="w-8 h-8 rounded-full mr-3" alt="头像">
+                <div class="flex-1">
+                    <div class="text-sm font-medium text-gray-800">建议联系王芳</div>
+                    <div class="text-xs text-gray-500">上次互动：1周前</div>
+                </div>
+                <i class="fas fa-comment text-blue-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 今日统计 -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="card p-3 text-center">
+            <div class="text-2xl font-bold text-blue-600">2</div>
+            <div class="text-xs text-gray-500">今日日记</div>
+        </div>
+        <div class="card p-3 text-center">
+            <div class="text-2xl font-bold text-green-600">5</div>
+            <div class="text-xs text-gray-500">完成任务</div>
+        </div>
+        <div class="card p-3 text-center">
+            <div class="text-2xl font-bold text-purple-600">3</div>
+            <div class="text-xs text-gray-500">AI对话</div>
+        </div>
+    </div>
+</body>
+</html>

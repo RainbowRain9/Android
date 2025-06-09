@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+        
+        .stat-up {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .stat-down {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin: 16px 0;
+        }
+        
+        .chart-container-large {
+            position: relative;
+            height: 300px;
+            margin: 16px 0;
+        }
+        
+        .period-selector {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 4px;
+        }
+        
+        .period-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6b7280;
+            text-align: center;
+        }
+        
+        .period-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .mood-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .mood-emoji {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .mood-count {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .mood-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+        }
+        
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin: 16px 0;
+        }
+        
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            background: #f3f4f6;
+        }
+        
+        .heatmap-cell.level-1 { background: #c6f6d5; }
+        .heatmap-cell.level-2 { background: #9ae6b4; }
+        .heatmap-cell.level-3 { background: #68d391; }
+        .heatmap-cell.level-4 { background: #38a169; }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mr-3">
+                <i class="fas fa-arrow-left text-gray-600"></i>
+            </button>
+            <h1 class="text-2xl font-bold text-gray-800">数据分析</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-download text-gray-600"></i>
+            </button>
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-share text-gray-600"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 时间段选择 -->
+    <div class="card p-4 mb-4">
+        <div class="period-selector">
+            <button class="period-btn" onclick="changePeriod('week')">本周</button>
+            <button class="period-btn active" onclick="changePeriod('month')">本月</button>
+            <button class="period-btn" onclick="changePeriod('quarter')">本季度</button>
+            <button class="period-btn" onclick="changePeriod('year')">本年</button>
+        </div>
+    </div>
+    
+    <!-- 核心统计 -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="stat-card fade-in">
+            <div class="stat-number text-blue-600">127</div>
+            <div class="stat-label">总记录数</div>
+            <div class="stat-change stat-up">
+                <i class="fas fa-arrow-up mr-1"></i>+12%
+            </div>
+        </div>
+        
+        <div class="stat-card fade-in">
+            <div class="stat-number text-green-600">23</div>
+            <div class="stat-label">本月记录</div>
+            <div class="stat-change stat-up">
+                <i class="fas fa-arrow-up mr-1"></i>+8%
+            </div>
+        </div>
+        
+        <div class="stat-card fade-in">
+            <div class="stat-number text-purple-600">85%</div>
+            <div class="stat-label">目标完成率</div>
+            <div class="stat-change stat-up">
+                <i class="fas fa-arrow-up mr-1"></i>+5%
+            </div>
+        </div>
+        
+        <div class="stat-card fade-in">
+            <div class="stat-number text-orange-600">18</div>
+            <div class="stat-label">连续记录天数</div>
+            <div class="stat-change stat-down">
+                <i class="fas fa-arrow-down mr-1"></i>-2天
+            </div>
+        </div>
+    </div>
+    
+    <!-- 记录趋势 -->
+    <div class="card p-4 mb-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3">记录趋势</h3>
+        <div class="chart-container">
+            <canvas id="recordTrendChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- 心情分析 -->
+    <div class="card p-4 mb-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3">心情分析</h3>
+        <div class="mood-grid">
+            <div class="mood-item">
+                <div class="mood-emoji">😊</div>
+                <div class="mood-count">45</div>
+                <div class="mood-label">开心</div>
+            </div>
+            <div class="mood-item">
+                <div class="mood-emoji">😌</div>
+                <div class="mood-count">32</div>
+                <div class="mood-label">平静</div>
+            </div>
+            <div class="mood-item">
+                <div class="mood-emoji">🤔</div>
+                <div class="mood-count">28</div>
+                <div class="mood-label">思考</div>
+            </div>
+            <div class="mood-item">
+                <div class="mood-emoji">😴</div>
+                <div class="mood-count">15</div>
+                <div class="mood-label">疲惫</div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="moodChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- 记录类型分布 -->
+    <div class="card p-4 mb-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3">记录类型分布</h3>
+        <div class="chart-container">
+            <canvas id="typeDistributionChart"></canvas>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-4">
+            <div class="text-center">
+                <div class="w-4 h-4 bg-orange-500 rounded mx-auto mb-1"></div>
+                <div class="text-sm font-medium">日记 42%</div>
+            </div>
+            <div class="text-center">
+                <div class="w-4 h-4 bg-green-500 rounded mx-auto mb-1"></div>
+                <div class="text-sm font-medium">任务 28%</div>
+            </div>
+            <div class="text-center">
+                <div class="w-4 h-4 bg-purple-500 rounded mx-auto mb-1"></div>
+                <div class="text-sm font-medium">人脉 18%</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 活跃度热力图 -->
+    <div class="card p-4 mb-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3">活跃度热力图</h3>
+        <div class="text-sm text-gray-600 mb-2">过去3个月的记录活跃度</div>
+        <div class="heatmap">
+            <!-- 生成热力图格子 -->
+            <div class="heatmap-cell"></div>
+            <div class="heatmap-cell level-1"></div>
+            <div class="heatmap-cell level-2"></div>
+            <div class="heatmap-cell level-3"></div>
+            <div class="heatmap-cell level-4"></div>
+            <div class="heatmap-cell level-2"></div>
+            <div class="heatmap-cell level-1"></div>
+            <!-- 更多格子... -->
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+            <span>较少</span>
+            <div class="flex items-center gap-1">
+                <div class="w-2 h-2 bg-gray-200 rounded"></div>
+                <div class="w-2 h-2 bg-green-200 rounded"></div>
+                <div class="w-2 h-2 bg-green-300 rounded"></div>
+                <div class="w-2 h-2 bg-green-400 rounded"></div>
+                <div class="w-2 h-2 bg-green-500 rounded"></div>
+            </div>
+            <span>较多</span>
+        </div>
+    </div>
+    
+    <!-- 目标达成 -->
+    <div class="card p-4 mb-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3">目标达成情况</h3>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-book text-blue-600"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800">每日记录</div>
+                        <div class="text-sm text-gray-500">目标：每天1篇</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="w-12 h-12 relative">
+                        <svg class="w-12 h-12 progress-ring">
+                            <circle cx="24" cy="24" r="20" stroke="#e5e7eb" stroke-width="4" fill="transparent"/>
+                            <circle cx="24" cy="24" r="20" stroke="#3b82f6" stroke-width="4" fill="transparent"
+                                    stroke-dasharray="87.9 125.6" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-600">
+                            85%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-tasks text-green-600"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800">任务完成</div>
+                        <div class="text-sm text-gray-500">目标：每周10个</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="w-12 h-12 relative">
+                        <svg class="w-12 h-12 progress-ring">
+                            <circle cx="24" cy="24" r="20" stroke="#e5e7eb" stroke-width="4" fill="transparent"/>
+                            <circle cx="24" cy="24" r="20" stroke="#10b981" stroke-width="4" fill="transparent"
+                                    stroke-dasharray="94.2 125.6" class="progress-ring-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-xs font-medium text-green-600">
+                            92%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI洞察 -->
+    <div class="card p-4 mb-4 slide-in">
+        <div class="flex items-center mb-3">
+            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-brain text-purple-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800">AI洞察</h3>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-4">
+            <div class="text-sm text-purple-800 leading-relaxed">
+                <strong>本月分析：</strong>您的记录习惯很稳定，主要集中在晚上8-10点。情绪状态整体积极，工作相关的记录占比较高。建议增加一些生活感悟类的记录，平衡工作与生活的内容比例。
+            </div>
+        </div>
+        <div class="mt-3 flex gap-2">
+            <span class="bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">记录习惯良好</span>
+            <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">情绪积极</span>
+            <span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full">建议多样化</span>
+        </div>
+    </div>
+    
+    <script>
+        // 记录趋势图表
+        const recordTrendCtx = document.getElementById('recordTrendChart').getContext('2d');
+        new Chart(recordTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['第1周', '第2周', '第3周', '第4周'],
+                datasets: [{
+                    label: '记录数量',
+                    data: [5, 8, 6, 9],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 心情分析图表
+        const moodCtx = document.getElementById('moodChart').getContext('2d');
+        new Chart(moodCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['开心', '平静', '思考', '疲惫'],
+                datasets: [{
+                    data: [45, 32, 28, 15],
+                    backgroundColor: ['#fbbf24', '#34d399', '#8b5cf6', '#f87171']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // 类型分布图表
+        const typeCtx = document.getElementById('typeDistributionChart').getContext('2d');
+        new Chart(typeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['日记', '任务', '人脉', '笔记', '目标'],
+                datasets: [{
+                    data: [42, 28, 18, 8, 4],
+                    backgroundColor: ['#f97316', '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 时间段切换
+        function changePeriod(period) {
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 这里可以添加数据更新逻辑
+            console.log('切换到:', period);
+        }
+        
+        // 生成更多热力图格子
+        const heatmap = document.querySelector('.heatmap');
+        for (let i = 0; i < 84; i++) { // 12周 * 7天
+            const cell = document.createElement('div');
+            cell.className = `heatmap-cell ${Math.random() > 0.7 ? 'level-' + Math.ceil(Math.random() * 4) : ''}`;
+            heatmap.appendChild(cell);
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

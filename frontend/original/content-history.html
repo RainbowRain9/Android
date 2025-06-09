@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .content-item {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .content-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .content-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .content-body {
+            padding: 16px;
+        }
+        
+        .content-footer {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            gap: 4px;
+        }
+        
+        .type-diary {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .type-task {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .type-contact {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .type-note {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .type-goal {
+            background: #fff8e1;
+            color: #f57f17;
+        }
+        
+        .type-travel {
+            background: #e0f2f1;
+            color: #00695c;
+        }
+        
+        .mood-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 4px;
+        }
+        
+        .view-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6b7280;
+        }
+        
+        .view-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .timeline-container {
+            position: relative;
+            padding-left: 32px;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 16px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -40px;
+            top: 16px;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background: #f3f4f6;
+        }
+        
+        .calendar-day.has-content {
+            background: #eff6ff;
+            color: #1976d2;
+            font-weight: 600;
+        }
+        
+        .calendar-day.has-content::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+        
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .filter-chip {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .filter-chip.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm mr-3">
+                <i class="fas fa-arrow-left text-gray-600"></i>
+            </button>
+            <h1 class="text-2xl font-bold text-gray-800">历史记录</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-filter text-gray-600"></i>
+            </button>
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-sort text-gray-600"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="搜索日记、笔记、任务...">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+    
+    <!-- 筛选标签 -->
+    <div class="filter-chips">
+        <button class="filter-chip active" onclick="filterContent('all')">全部</button>
+        <button class="filter-chip" onclick="filterContent('diary')">日记</button>
+        <button class="filter-chip" onclick="filterContent('task')">任务</button>
+        <button class="filter-chip" onclick="filterContent('contact')">人脉</button>
+        <button class="filter-chip" onclick="filterContent('note')">笔记</button>
+        <button class="filter-chip" onclick="filterContent('goal')">目标</button>
+        <button class="filter-chip" onclick="filterContent('travel')">旅行</button>
+    </div>
+    
+    <!-- 视图切换 -->
+    <div class="card p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">查看方式</h3>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('list')">
+                    <i class="fas fa-list mr-1"></i>列表
+                </button>
+                <button class="view-btn" onclick="switchView('timeline')">
+                    <i class="fas fa-clock mr-1"></i>时间轴
+                </button>
+                <button class="view-btn" onclick="switchView('calendar')">
+                    <i class="fas fa-calendar mr-1"></i>日历
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 列表视图 -->
+    <div id="listView" class="content-view">
+        <!-- 日记条目 -->
+        <div class="content-item fade-in" data-type="diary">
+            <div class="content-header">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="type-badge type-diary">
+                            <i class="fas fa-book"></i>
+                            日记
+                        </span>
+                        <h3 class="font-semibold text-gray-800">春日漫步的思考</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="mood-icon bg-yellow-100 text-yellow-600">😊</div>
+                        <span class="text-sm text-gray-500">3月15日 20:30</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <p class="text-gray-700 leading-relaxed mb-3">
+                    今天在公园里走了很久，看到樱花开始绽放，心情特别好。春天总是能给人带来希望和活力，让我想起了很多美好的回忆...
+                </p>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">生活感悟</span>
+                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">自然</span>
+                    <span class="bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">心情</span>
+                </div>
+            </div>
+            <div class="content-footer">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span><i class="fas fa-eye mr-1"></i>已读 3 次</span>
+                        <span><i class="fas fa-heart mr-1"></i>收藏</span>
+                    </div>
+                    <button class="text-blue-600 text-sm">
+                        <i class="fas fa-share mr-1"></i>分享
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 任务条目 -->
+        <div class="content-item slide-in" data-type="task">
+            <div class="content-header">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="type-badge type-task">
+                            <i class="fas fa-tasks"></i>
+                            任务
+                        </span>
+                        <h3 class="font-semibold text-gray-800">项目进度回顾</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">已完成</span>
+                        <span class="text-sm text-gray-500">3月14日 18:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <p class="text-gray-700 leading-relaxed mb-3">
+                    本周完成了数据库设计和API接口开发，团队协作很顺利。下周计划开始前端界面开发...
+                </p>
+                <div class="bg-gray-50 rounded-lg p-3 mb-3">
+                    <div class="text-sm font-medium text-gray-800 mb-2">任务清单 (8/10 完成)</div>
+                    <div class="space-y-1">
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="line-through text-gray-500">需求分析</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="line-through text-gray-500">数据库设计</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <i class="fas fa-circle text-gray-300 mr-2"></i>
+                            <span>前端开发</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">工作</span>
+                    <span class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full">项目</span>
+                </div>
+            </div>
+            <div class="content-footer">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>用时 2小时</span>
+                        <span><i class="fas fa-star mr-1"></i>重要</span>
+                    </div>
+                    <button class="text-blue-600 text-sm">
+                        <i class="fas fa-edit mr-1"></i>编辑
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 人脉条目 -->
+        <div class="content-item slide-in" data-type="contact">
+            <div class="content-header">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="type-badge type-contact">
+                            <i class="fas fa-users"></i>
+                            人脉
+                        </span>
+                        <h3 class="font-semibold text-gray-800">与李雷的工作讨论</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=24&h=24&fit=crop&crop=face" 
+                             class="w-6 h-6 rounded-full" alt="李雷">
+                        <span class="text-sm text-gray-500">3月13日 14:30</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <p class="text-gray-700 leading-relaxed mb-3">
+                    和李雷讨论了新项目的技术方案，他提出了一些很有价值的建议。特别是在数据库优化方面，他的经验很丰富...
+                </p>
+                <div class="bg-purple-50 rounded-lg p-3 mb-3">
+                    <div class="text-sm font-medium text-purple-800 mb-2">互动记录</div>
+                    <div class="text-sm text-purple-700">
+                        • 讨论技术方案 (1小时)<br>
+                        • 分享项目经验<br>
+                        • 约定下次会议时间
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">工作</span>
+                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">讨论</span>
+                </div>
+            </div>
+            <div class="content-footer">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span><i class="fas fa-heart mr-1"></i>亲密度 +5</span>
+                        <span><i class="fas fa-comment mr-1"></i>重要对话</span>
+                    </div>
+                    <button class="text-blue-600 text-sm">
+                        <i class="fas fa-user mr-1"></i>查看联系人
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 笔记条目 -->
+        <div class="content-item slide-in" data-type="note">
+            <div class="content-header">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="type-badge type-note">
+                            <i class="fas fa-sticky-note"></i>
+                            笔记
+                        </span>
+                        <h3 class="font-semibold text-gray-800">React Hooks 学习笔记</h3>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">学习</span>
+                        <span class="text-sm text-gray-500">3月12日 21:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <p class="text-gray-700 leading-relaxed mb-3">
+                    今天学习了React Hooks的高级用法，特别是useCallback和useMemo的优化技巧...
+                </p>
+                <div class="bg-blue-50 rounded-lg p-3 mb-3">
+                    <div class="text-sm font-medium text-blue-800 mb-2">关键要点</div>
+                    <div class="text-sm text-blue-700">
+                        • useCallback用于缓存函数<br>
+                        • useMemo用于缓存计算结果<br>
+                        • 避免不必要的重新渲染
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">技术</span>
+                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">前端</span>
+                </div>
+            </div>
+            <div class="content-footer">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span><i class="fas fa-bookmark mr-1"></i>已收藏</span>
+                        <span><i class="fas fa-code mr-1"></i>包含代码</span>
+                    </div>
+                    <button class="text-blue-600 text-sm">
+                        <i class="fas fa-external-link-alt mr-1"></i>查看详情
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 时间轴视图 -->
+    <div id="timelineView" class="content-view" style="display: none;">
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            
+            <div class="timeline-item">
+                <div class="content-item" data-type="diary">
+                    <div class="content-header">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-medium text-gray-800">春日漫步的思考</h4>
+                            <span class="text-sm text-gray-500">今天 20:30</span>
+                        </div>
+                    </div>
+                    <div class="content-body">
+                        <p class="text-gray-600 text-sm">今天在公园里走了很久，看到樱花开始绽放...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="content-item" data-type="task">
+                    <div class="content-header">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-medium text-gray-800">项目进度回顾</h4>
+                            <span class="text-sm text-gray-500">昨天 18:00</span>
+                        </div>
+                    </div>
+                    <div class="content-body">
+                        <p class="text-gray-600 text-sm">本周完成了数据库设计和API接口开发...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 日历视图 -->
+    <div id="calendarView" class="content-view" style="display: none;">
+        <div class="card p-4 mb-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-gray-800">2024年3月</h3>
+                <div class="flex items-center gap-2">
+                    <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-left text-gray-600"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="calendar-grid">
+                <div class="text-center text-sm text-gray-500 font-medium">日</div>
+                <div class="text-center text-sm text-gray-500 font-medium">一</div>
+                <div class="text-center text-sm text-gray-500 font-medium">二</div>
+                <div class="text-center text-sm text-gray-500 font-medium">三</div>
+                <div class="text-center text-sm text-gray-500 font-medium">四</div>
+                <div class="text-center text-sm text-gray-500 font-medium">五</div>
+                <div class="text-center text-sm text-gray-500 font-medium">六</div>
+                
+                <!-- 日期格子 -->
+                <div class="calendar-day">1</div>
+                <div class="calendar-day">2</div>
+                <div class="calendar-day">3</div>
+                <div class="calendar-day">4</div>
+                <div class="calendar-day">5</div>
+                <div class="calendar-day">6</div>
+                <div class="calendar-day">7</div>
+                <div class="calendar-day">8</div>
+                <div class="calendar-day">9</div>
+                <div class="calendar-day">10</div>
+                <div class="calendar-day">11</div>
+                <div class="calendar-day has-content">12</div>
+                <div class="calendar-day has-content">13</div>
+                <div class="calendar-day has-content">14</div>
+                <div class="calendar-day has-content">15</div>
+                <div class="calendar-day">16</div>
+                <div class="calendar-day">17</div>
+                <div class="calendar-day">18</div>
+                <div class="calendar-day">19</div>
+                <div class="calendar-day">20</div>
+                <div class="calendar-day">21</div>
+                <div class="calendar-day">22</div>
+                <div class="calendar-day">23</div>
+                <div class="calendar-day">24</div>
+                <div class="calendar-day">25</div>
+                <div class="calendar-day">26</div>
+                <div class="calendar-day">27</div>
+                <div class="calendar-day">28</div>
+                <div class="calendar-day">29</div>
+                <div class="calendar-day">30</div>
+                <div class="calendar-day">31</div>
+            </div>
+        </div>
+        
+        <div class="card p-4">
+            <h4 class="font-medium text-gray-800 mb-3">3月15日的记录</h4>
+            <div class="space-y-2">
+                <div class="flex items-center p-2 bg-orange-50 rounded-lg">
+                    <i class="fas fa-book text-orange-600 mr-2"></i>
+                    <span class="text-sm">春日漫步的思考</span>
+                </div>
+                <div class="flex items-center p-2 bg-green-50 rounded-lg">
+                    <i class="fas fa-tasks text-green-600 mr-2"></i>
+                    <span class="text-sm">完成项目任务</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 筛选内容
+        function filterContent(type) {
+            // 更新筛选按钮状态
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 筛选内容项
+            document.querySelectorAll('.content-item').forEach(item => {
+                if (type === 'all' || item.dataset.type === type) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 切换视图
+        function switchView(viewType) {
+            // 更新按钮状态
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 隐藏所有视图
+            document.querySelectorAll('.content-view').forEach(view => {
+                view.style.display = 'none';
+            });
+            
+            // 显示选中的视图
+            const viewMap = {
+                'list': 'listView',
+                'timeline': 'timelineView',
+                'calendar': 'calendarView'
+            };
+            
+            document.getElementById(viewMap[viewType]).style.display = 'block';
+        }
+        
+        // 搜索功能
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.content-item').forEach(item => {
+                const title = item.querySelector('h3').textContent.toLowerCase();
+                const content = item.querySelector('.content-body p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

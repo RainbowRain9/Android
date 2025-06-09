@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - 洞察分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .insight-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ef4444, #10b981);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 500;
+        }
+        
+        .ai-insight-card {
+            background: linear-gradient(135deg, #fef7ff 0%, #f3e8ff 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: start;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+        
+        .insight-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .mood-chart {
+            display: flex;
+            align-items: end;
+            gap: 8px;
+            height: 100px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .mood-bar {
+            flex: 1;
+            background: linear-gradient(to top, #3b82f6, #8b5cf6);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .mood-bar:hover {
+            transform: scale(1.05);
+        }
+        
+        .mood-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #6b7280;
+        }
+        
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+        
+        .progress-ring-circle {
+            stroke: #e5e7eb;
+            stroke-width: 4;
+            fill: transparent;
+            r: 36;
+            cx: 40;
+            cy: 40;
+        }
+        
+        .progress-ring-progress {
+            stroke: #3b82f6;
+            stroke-width: 4;
+            stroke-linecap: round;
+            fill: transparent;
+            r: 36;
+            cx: 40;
+            cy: 40;
+            stroke-dasharray: 226;
+            stroke-dashoffset: 56;
+            transform: rotate(-90deg);
+            transform-origin: 40px 40px;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            gap: 4px;
+        }
+        
+        .trend-up {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .trend-down {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .trend-stable {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .recommendation-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #0ea5e9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+        }
+
+        /* 数据分析切换按钮 */
+        .analysis-content {
+            transition: all 0.3s ease;
+        }
+
+        /* 活跃度热力图 */
+        .heatmap-container {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .heatmap-grid {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .week-labels {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-right: 8px;
+        }
+
+        .week-label {
+            height: 12px;
+            font-size: 10px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            width: 24px;
+        }
+
+        .heatmap-cells {
+            display: grid;
+            grid-template-rows: repeat(7, 12px);
+            grid-auto-flow: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .heatmap-cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            border: 1px solid #374151;
+        }
+
+        .heatmap-cell.level-0 { background: #f3f4f6; }
+        .heatmap-cell.level-1 { background: #c7d2fe; }
+        .heatmap-cell.level-2 { background: #a5b4fc; }
+        .heatmap-cell.level-3 { background: #818cf8; }
+        .heatmap-cell.level-4 { background: #6366f1; }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .legend-scale {
+            display: flex;
+            gap: 2px;
+        }
+
+        .legend-item {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .legend-item.level-0 { background: #f3f4f6; }
+        .legend-item.level-1 { background: #c7d2fe; }
+        .legend-item.level-2 { background: #a5b4fc; }
+        .legend-item.level-3 { background: #818cf8; }
+        .legend-item.level-4 { background: #6366f1; }
+
+        /* 分类分析图表 */
+        .category-chart {
+            space-y: 12px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .category-info {
+            min-width: 80px;
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .category-bar {
+            flex: 1;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .category-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+
+        .activity-stats {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 洞察分析头部 -->
+    <div class="insight-header fade-in">
+        <h1 class="text-xl font-bold mb-2">AI洞察分析</h1>
+        <p class="text-white/80 text-sm">基于你的记录数据，AI为你提供个性化洞察</p>
+        <div class="mt-4 flex justify-center">
+            <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span class="text-sm">数据更新时间: 刚刚</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 核心统计 -->
+    <div class="stats-grid fade-in">
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-blue-600 mb-1">156</div>
+            <div class="text-xs text-gray-500 mb-2">总记录数</div>
+            <div class="trend-indicator trend-up">
+                <i class="fas fa-arrow-up"></i>
+                +12 本月
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-green-600 mb-1">23</div>
+            <div class="text-xs text-gray-500 mb-2">连续天数</div>
+            <div class="trend-indicator trend-up">
+                <i class="fas fa-fire"></i>
+                新纪录
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-purple-600 mb-1">4.2</div>
+            <div class="text-xs text-gray-500 mb-2">平均心情</div>
+            <div class="trend-indicator trend-stable">
+                <i class="fas fa-minus"></i>
+                稳定
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-orange-600 mb-1">89%</div>
+            <div class="text-xs text-gray-500 mb-2">目标完成率</div>
+            <div class="trend-indicator trend-up">
+                <i class="fas fa-arrow-up"></i>
+                +5%
+            </div>
+        </div>
+    </div>
+    
+    <!-- 数据分析切换 -->
+    <div class="card p-4 slide-in">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-800">数据分析</h3>
+            <div class="flex gap-2">
+                <button id="moodBtn" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm transition-all" onclick="switchAnalysis('mood')">
+                    心情分析
+                </button>
+                <button id="activityBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm transition-all" onclick="switchAnalysis('activity')">
+                    活跃度分析
+                </button>
+                <button id="categoryBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm transition-all" onclick="switchAnalysis('category')">
+                    内容分析
+                </button>
+            </div>
+        </div>
+
+        <!-- 心情趋势图 -->
+        <div id="moodAnalysis" class="analysis-content">
+            <div class="mood-chart">
+                <div class="mood-bar" style="height: 60%;">
+                    <div class="mood-label">周一</div>
+                </div>
+                <div class="mood-bar" style="height: 80%;">
+                    <div class="mood-label">周二</div>
+                </div>
+                <div class="mood-bar" style="height: 45%;">
+                    <div class="mood-label">周三</div>
+                </div>
+                <div class="mood-bar" style="height: 90%;">
+                    <div class="mood-label">周四</div>
+                </div>
+                <div class="mood-bar" style="height: 75%;">
+                    <div class="mood-label">周五</div>
+                </div>
+                <div class="mood-bar" style="height: 95%;">
+                    <div class="mood-label">周六</div>
+                </div>
+                <div class="mood-bar" style="height: 85%;">
+                    <div class="mood-label">周日</div>
+                </div>
+            </div>
+
+            <div class="text-center text-sm text-gray-600 mt-4">
+                本周平均心情指数: 4.2/5.0 😊
+            </div>
+        </div>
+
+        <!-- 活跃度热力图 -->
+        <div id="activityAnalysis" class="analysis-content" style="display: none;">
+            <div class="heatmap-container">
+                <div class="heatmap-header">
+                    <div class="text-sm text-gray-600 mb-2">过去12周活跃度热力图</div>
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span>3个月前</span>
+                        <span>现在</span>
+                    </div>
+                </div>
+
+                <div class="heatmap-grid">
+                    <!-- 周标签 -->
+                    <div class="week-labels">
+                        <div class="week-label">周一</div>
+                        <div class="week-label">周二</div>
+                        <div class="week-label">周三</div>
+                        <div class="week-label">周四</div>
+                        <div class="week-label">周五</div>
+                        <div class="week-label">周六</div>
+                        <div class="week-label">周日</div>
+                    </div>
+
+                    <!-- 热力图格子 -->
+                    <div class="heatmap-cells" id="heatmapCells">
+                        <!-- 将通过JavaScript生成 -->
+                    </div>
+                </div>
+
+                <div class="heatmap-legend">
+                    <span class="text-xs text-gray-500">活跃度：</span>
+                    <div class="legend-scale">
+                        <div class="legend-item level-0" title="无活动"></div>
+                        <div class="legend-item level-1" title="低活跃"></div>
+                        <div class="legend-item level-2" title="中等活跃"></div>
+                        <div class="legend-item level-3" title="高活跃"></div>
+                        <div class="legend-item level-4" title="非常活跃"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-stats mt-4">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center p-3 bg-blue-50 rounded-lg">
+                        <div class="text-lg font-bold text-blue-600">67</div>
+                        <div class="text-xs text-gray-500">活跃天数</div>
+                    </div>
+                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                        <div class="text-lg font-bold text-green-600">23</div>
+                        <div class="text-xs text-gray-500">最长连续</div>
+                    </div>
+                    <div class="text-center p-3 bg-orange-50 rounded-lg">
+                        <div class="text-lg font-bold text-orange-600">4.2</div>
+                        <div class="text-xs text-gray-500">平均每日</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容分类分析 -->
+        <div id="categoryAnalysis" class="analysis-content" style="display: none;">
+            <div class="category-chart">
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">日记</div>
+                        <div class="category-count">45篇</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-orange-500" style="width: 45%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">任务</div>
+                        <div class="category-count">32个</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-green-500" style="width: 32%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">笔记</div>
+                        <div class="category-count">28篇</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-blue-500" style="width: 28%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">人脉</div>
+                        <div class="category-count">23条</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-purple-500" style="width: 23%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">目标</div>
+                        <div class="category-count">15个</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-red-500" style="width: 15%;"></div>
+                    </div>
+                </div>
+
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-name">旅行</div>
+                        <div class="category-count">8篇</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill bg-teal-500" style="width: 8%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center text-sm text-gray-600 mt-4">
+                总计 151 条记录，日记类型占比最高
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI洞察建议 -->
+    <div class="ai-insight-card slide-in">
+        <div class="flex items-center mb-3">
+            <i class="fas fa-brain text-purple-600 mr-2"></i>
+            <h3 class="font-semibold text-gray-800">AI智能洞察</h3>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">写作频率提升</div>
+                <div class="text-xs text-gray-600 mt-1">
+                    你的记录频率比上月提升了40%，保持这个节奏有助于形成良好习惯
+                </div>
+            </div>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon bg-gradient-to-r from-green-500 to-teal-500">
+                <i class="fas fa-smile"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">情绪状态良好</div>
+                <div class="text-xs text-gray-600 mt-1">
+                    周末的心情指数明显更高，建议在工作日也安排一些放松活动
+                </div>
+            </div>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">社交活动增加</div>
+                <div class="text-xs text-gray-600 mt-1">
+                    本月与朋友的互动记录增加了60%，社交生活更加丰富
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 个性化推荐 -->
+    <div class="card p-4 slide-in">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-magic text-blue-500 mr-2"></i>
+                个性化推荐
+            </h3>
+            <button class="text-blue-500 text-sm">刷新推荐</button>
+        </div>
+        
+        <div class="recommendation-card" onclick="applyRecommendation('写作时间')">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-gray-800 text-sm">最佳写作时间</div>
+                    <div class="text-xs text-gray-600 mt-1">
+                        根据你的习惯，晚上8-10点是最佳创作时间
+                    </div>
+                </div>
+                <i class="fas fa-clock text-blue-500"></i>
+            </div>
+        </div>
+        
+        <div class="recommendation-card" onclick="applyRecommendation('内容主题')">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-gray-800 text-sm">推荐写作主题</div>
+                    <div class="text-xs text-gray-600 mt-1">
+                        基于你的兴趣，建议记录更多关于"学习成长"的内容
+                    </div>
+                </div>
+                <i class="fas fa-lightbulb text-yellow-500"></i>
+            </div>
+        </div>
+        
+        <div class="recommendation-card" onclick="applyRecommendation('目标设定')">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-gray-800 text-sm">目标优化建议</div>
+                    <div class="text-xs text-gray-600 mt-1">
+                        建议将大目标分解为更小的可执行步骤
+                    </div>
+                </div>
+                <i class="fas fa-target text-red-500"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 数据导出 -->
+    <div class="card p-4 mt-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+            <i class="fas fa-download text-green-500 mr-2"></i>
+            数据导出
+        </h3>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <button class="flex items-center justify-center p-3 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors" onclick="exportData('pdf')">
+                <i class="fas fa-file-pdf mr-2"></i>
+                PDF报告
+            </button>
+            <button class="flex items-center justify-center p-3 bg-green-50 text-green-600 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors" onclick="exportData('excel')">
+                <i class="fas fa-file-excel mr-2"></i>
+                Excel数据
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // 应用推荐
+        function applyRecommendation(type) {
+            alert(`应用推荐: ${type}`);
+        }
+        
+        // 导出数据
+        function exportData(format) {
+            alert(`导出${format.toUpperCase()}格式数据`);
+        }
+
+        // 切换数据分析类型
+        function switchAnalysis(type) {
+            // 更新按钮状态
+            const buttons = ['moodBtn', 'activityBtn', 'categoryBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btnId === type + 'Btn') {
+                    btn.className = 'px-3 py-1 bg-blue-500 text-white rounded-lg text-sm transition-all';
+                } else {
+                    btn.className = 'px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm transition-all';
+                }
+            });
+
+            // 切换显示内容
+            const contents = ['moodAnalysis', 'activityAnalysis', 'categoryAnalysis'];
+            contents.forEach(contentId => {
+                const content = document.getElementById(contentId);
+                if (contentId === type + 'Analysis') {
+                    content.style.display = 'block';
+                    content.style.opacity = '0';
+                    setTimeout(() => {
+                        content.style.transition = 'opacity 0.3s ease';
+                        content.style.opacity = '1';
+                    }, 50);
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+
+            // 如果切换到活跃度分析，生成热力图
+            if (type === 'activity') {
+                generateHeatmap();
+            }
+
+            // 如果切换到分类分析，启动动画
+            if (type === 'category') {
+                animateCategoryBars();
+            }
+        }
+
+        // 生成活跃度热力图
+        function generateHeatmap() {
+            const container = document.getElementById('heatmapCells');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            // 生成12周 × 7天的数据
+            for (let week = 0; week < 12; week++) {
+                for (let day = 0; day < 7; day++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+
+                    // 模拟活跃度数据 (0-4级别)
+                    const activity = Math.floor(Math.random() * 5);
+                    cell.classList.add(`level-${activity}`);
+
+                    // 添加悬停提示
+                    const date = new Date();
+                    date.setDate(date.getDate() - (11 - week) * 7 - (6 - day));
+                    const dateStr = date.toLocaleDateString('zh-CN');
+                    const activityText = ['无活动', '低活跃', '中等活跃', '高活跃', '非常活跃'][activity];
+                    cell.title = `${dateStr}: ${activityText}`;
+
+                    // 添加点击事件
+                    cell.addEventListener('click', function() {
+                        alert(`${dateStr}: ${activityText}`);
+                    });
+
+                    container.appendChild(cell);
+                }
+            }
+
+            // 添加加载动画
+            const cells = container.querySelectorAll('.heatmap-cell');
+            cells.forEach((cell, index) => {
+                cell.style.opacity = '0';
+                cell.style.transform = 'scale(0)';
+                setTimeout(() => {
+                    cell.style.transition = 'all 0.2s ease-out';
+                    cell.style.opacity = '1';
+                    cell.style.transform = 'scale(1)';
+                }, index * 10);
+            });
+        }
+
+        // 分类条形图动画
+        function animateCategoryBars() {
+            const bars = document.querySelectorAll('.category-fill');
+            bars.forEach((bar, index) => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, index * 100);
+            });
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+        
+        // 模拟数据加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const moodBars = document.querySelectorAll('.mood-bar');
+            moodBars.forEach((bar, index) => {
+                bar.style.transform = 'scaleY(0)';
+                bar.style.transformOrigin = 'bottom';
+                bar.style.transition = 'transform 0.6s ease-out';
+
+                setTimeout(() => {
+                    bar.style.transform = 'scaleY(1)';
+                }, index * 150 + 500);
+            });
+
+            // 添加统计数字动画
+            animateNumbers();
+
+            // 初始化热力图（延迟加载）
+            setTimeout(() => {
+                generateHeatmap();
+            }, 2000);
+        });
+
+        // 数字动画效果
+        function animateNumbers() {
+            const statNumbers = document.querySelectorAll('.stat-card .text-2xl');
+            statNumbers.forEach((element, index) => {
+                const finalValue = element.textContent;
+                const isPercentage = finalValue.includes('%');
+                const numericValue = parseFloat(finalValue);
+
+                let currentValue = 0;
+                const increment = numericValue / 30;
+
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= numericValue) {
+                        currentValue = numericValue;
+                        clearInterval(timer);
+                    }
+
+                    if (isPercentage) {
+                        element.textContent = Math.round(currentValue) + '%';
+                    } else if (finalValue.includes('.')) {
+                        element.textContent = currentValue.toFixed(1);
+                    } else {
+                        element.textContent = Math.round(currentValue);
+                    }
+                }, 50);
+
+                setTimeout(() => {
+                    element.textContent = finalValue;
+                }, 1500);
+            });
+        }
+
+        // 心情条点击事件
+        document.querySelectorAll('.mood-bar').forEach((bar, index) => {
+            bar.addEventListener('click', function() {
+                const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+                const values = [3.0, 4.0, 2.3, 4.5, 3.8, 4.8, 4.3];
+                alert(`${days[index]}: 心情指数 ${values[index]}/5.0`);
+            });
+        });
+    </script>
+</body>
+</html>

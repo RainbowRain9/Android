@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的清单</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .checkbox.checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        
+        .checkbox:hover {
+            border-color: #3b82f6;
+        }
+        
+        .list-item {
+            transition: all 0.3s ease;
+        }
+        
+        .list-item.completed {
+            opacity: 0.6;
+        }
+        
+        .list-item.completed .item-text {
+            text-decoration: line-through;
+        }
+        
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .priority-high { border-left: 4px solid #ef4444; }
+        .priority-medium { border-left: 4px solid #f59e0b; }
+        .priority-low { border-left: 4px solid #10b981; }
+        .priority-none { border-left: 4px solid #6b7280; }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">我的清单</h1>
+        <div class="flex items-center gap-3">
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-search text-gray-600"></i>
+            </button>
+            <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                <i class="fas fa-filter text-gray-600"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 统计概览 -->
+    <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="card p-4 text-center fade-in">
+            <div class="text-2xl font-bold text-blue-600">8</div>
+            <div class="text-xs text-gray-500 mt-1">总清单</div>
+        </div>
+        <div class="card p-4 text-center fade-in">
+            <div class="text-2xl font-bold text-green-600">23</div>
+            <div class="text-xs text-gray-500 mt-1">已完成</div>
+        </div>
+        <div class="card p-4 text-center fade-in">
+            <div class="text-2xl font-bold text-orange-600">12</div>
+            <div class="text-xs text-gray-500 mt-1">进行中</div>
+        </div>
+    </div>
+    
+    <!-- 清单列表 -->
+    <div class="space-y-4">
+        <!-- 工作任务清单 -->
+        <div class="card p-4 priority-high fade-in">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-briefcase text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">工作任务</h3>
+                        <div class="text-xs text-gray-500">标准待办 • 高优先级</div>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+            
+            <div class="progress-bar mb-3">
+                <div class="progress-fill" style="width: 37.5%"></div>
+            </div>
+            <div class="text-sm text-gray-600 mb-3">3/8 已完成 (37.5%)</div>
+            
+            <div class="space-y-2">
+                <div class="list-item completed flex items-center p-2 bg-gray-50 rounded-lg">
+                    <div class="checkbox checked mr-3">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <span class="item-text flex-1 text-sm">完成项目需求分析</span>
+                    <span class="text-xs text-gray-400">昨天</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">设计数据库架构</span>
+                    <span class="text-xs text-red-500">今天</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">编写API接口文档</span>
+                    <span class="text-xs text-gray-400">明天</span>
+                </div>
+            </div>
+            
+            <button class="text-blue-600 text-sm mt-3 flex items-center">
+                <i class="fas fa-plus mr-1"></i>添加任务
+            </button>
+        </div>
+        
+        <!-- 健康目标清单 -->
+        <div class="card p-4 priority-medium slide-in">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-heart text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">健康目标</h3>
+                        <div class="text-xs text-gray-500">目标追踪器 • 中优先级</div>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+            
+            <div class="progress-bar mb-3">
+                <div class="progress-fill bg-gradient-to-r from-green-500 to-green-600" style="width: 70%"></div>
+            </div>
+            <div class="text-sm text-gray-600 mb-3">7/10 已完成 (70%)</div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="text-center p-3 bg-green-50 rounded-lg">
+                    <div class="text-lg font-bold text-green-600">7000</div>
+                    <div class="text-xs text-gray-500">步数/天</div>
+                </div>
+                <div class="text-center p-3 bg-blue-50 rounded-lg">
+                    <div class="text-lg font-bold text-blue-600">8</div>
+                    <div class="text-xs text-gray-500">小时睡眠</div>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="list-item completed flex items-center p-2 bg-gray-50 rounded-lg">
+                    <div class="checkbox checked mr-3">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <span class="item-text flex-1 text-sm">晨跑30分钟</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">喝8杯水</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 学习计划清单 -->
+        <div class="card p-4 priority-low slide-in">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-book text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">学习计划</h3>
+                        <div class="text-xs text-gray-500">标准待办 • 低优先级</div>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+            
+            <div class="progress-bar mb-3">
+                <div class="progress-fill bg-gradient-to-r from-purple-500 to-purple-600" style="width: 60%"></div>
+            </div>
+            <div class="text-sm text-gray-600 mb-3">3/5 已完成 (60%)</div>
+            
+            <div class="space-y-2">
+                <div class="list-item completed flex items-center p-2 bg-gray-50 rounded-lg">
+                    <div class="checkbox checked mr-3">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <span class="item-text flex-1 text-sm">阅读《深度学习》第3章</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">完成Python练习题</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">观看机器学习视频课程</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 购物清单 -->
+        <div class="card p-4 priority-none slide-in">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-shopping-cart text-orange-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">购物清单</h3>
+                        <div class="text-xs text-gray-500">普通清单</div>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+            </div>
+            
+            <div class="progress-bar mb-3">
+                <div class="progress-fill bg-gradient-to-r from-orange-500 to-orange-600" style="width: 25%"></div>
+            </div>
+            <div class="text-sm text-gray-600 mb-3">1/4 已完成 (25%)</div>
+            
+            <div class="space-y-2">
+                <div class="list-item completed flex items-center p-2 bg-gray-50 rounded-lg">
+                    <div class="checkbox checked mr-3">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <span class="item-text flex-1 text-sm">牛奶</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">面包</span>
+                </div>
+                
+                <div class="list-item flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                    <div class="checkbox mr-3"></div>
+                    <span class="item-text flex-1 text-sm">鸡蛋</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 浮动操作按钮 -->
+    <div class="fab" onclick="createNewList()">
+        <i class="fas fa-plus"></i>
+    </div>
+    
+    <script>
+        // 复选框点击事件
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                const listItem = this.closest('.list-item');
+                listItem.classList.toggle('completed');
+                
+                if (this.classList.contains('checked')) {
+                    this.innerHTML = '<i class="fas fa-check text-xs"></i>';
+                } else {
+                    this.innerHTML = '';
+                }
+                
+                // 更新进度条
+                updateProgress(this.closest('.card'));
+            });
+        });
+        
+        // 更新进度条
+        function updateProgress(card) {
+            const checkboxes = card.querySelectorAll('.checkbox');
+            const checkedBoxes = card.querySelectorAll('.checkbox.checked');
+            const progress = (checkedBoxes.length / checkboxes.length) * 100;
+            
+            const progressFill = card.querySelector('.progress-fill');
+            const progressText = card.querySelector('.text-sm.text-gray-600');
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${checkedBoxes.length}/${checkboxes.length} 已完成 (${Math.round(progress)}%)`;
+        }
+        
+        // 创建新清单
+        function createNewList() {
+            alert('创建新清单功能');
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

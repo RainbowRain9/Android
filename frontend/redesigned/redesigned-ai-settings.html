@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - AI配置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .ai-header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .ai-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            color: white;
+            border: 4px solid white;
+        }
+        
+        .personality-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .personality-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+        }
+        
+        .personality-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .personality-card.active {
+            border-color: #8b5cf6;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        }
+        
+        .personality-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .settings-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .setting-content {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        
+        .setting-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .switch.active {
+            background: #8b5cf6;
+        }
+        
+        .switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .switch.active::before {
+            transform: translateX(20px);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            margin: 8px 0;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            cursor: pointer;
+        }
+        
+        .ai-preview {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .preview-message {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .voice-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        
+        .voice-option {
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+        
+        .voice-option:hover {
+            background: #e5e7eb;
+        }
+        
+        .voice-option.active {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        
+        .language-option {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .language-option:hover {
+            background: #e9ecef;
+        }
+        
+        .language-option.active {
+            border-color: #8b5cf6;
+            background: #faf5ff;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- AI配置头部 -->
+    <div class="ai-header fade-in">
+        <div class="ai-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <h1 class="text-xl font-bold mb-2">AI助手配置</h1>
+        <p class="text-white/80 text-sm">个性化你的AI伙伴，让它更懂你</p>
+        <div class="mt-4">
+            <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 inline-block">
+                <span class="text-sm">当前版本: GPT-4 Enhanced</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI个性选择 -->
+    <div class="card p-4 slide-in">
+        <h3 class="font-semibold text-gray-800 mb-4">AI个性类型</h3>
+        <div class="personality-grid">
+            <div class="personality-card active" onclick="selectPersonality('friendly')">
+                <div class="personality-icon">😊</div>
+                <div class="font-medium text-gray-800 text-sm">友善温暖</div>
+                <div class="text-xs text-gray-500 mt-1">温和友好，善于倾听</div>
+            </div>
+            
+            <div class="personality-card" onclick="selectPersonality('professional')">
+                <div class="personality-icon">🤓</div>
+                <div class="font-medium text-gray-800 text-sm">专业理性</div>
+                <div class="text-xs text-gray-500 mt-1">逻辑清晰，专业建议</div>
+            </div>
+            
+            <div class="personality-card" onclick="selectPersonality('creative')">
+                <div class="personality-icon">🎨</div>
+                <div class="font-medium text-gray-800 text-sm">创意灵感</div>
+                <div class="text-xs text-gray-500 mt-1">富有想象力，激发创意</div>
+            </div>
+            
+            <div class="personality-card" onclick="selectPersonality('humorous')">
+                <div class="personality-icon">😄</div>
+                <div class="font-medium text-gray-800 text-sm">幽默风趣</div>
+                <div class="text-xs text-gray-500 mt-1">轻松幽默，缓解压力</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI预览 -->
+    <div class="ai-preview slide-in">
+        <div class="flex items-center mb-3">
+            <i class="fas fa-eye text-blue-500 mr-2"></i>
+            <h3 class="font-semibold text-gray-800">AI回应预览</h3>
+        </div>
+        
+        <div class="preview-message" id="aiPreview">
+            😊 你好！我是你的AI助手，很高兴能陪伴你记录生活的美好时光。有什么想要分享的吗？
+        </div>
+        
+        <button class="text-blue-500 text-sm mt-2" onclick="refreshPreview()">
+            <i class="fas fa-refresh mr-1"></i>刷新预览
+        </button>
+    </div>
+    
+    <!-- 智能功能设置 -->
+    <div class="settings-section slide-in">
+        <div class="section-header">
+            <h3 class="font-semibold text-gray-800">智能功能</h3>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                <i class="fas fa-magic"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">智能写作建议</div>
+                <div class="setting-subtitle">AI主动提供写作灵感和建议</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-green-500 to-teal-500">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">情感分析</div>
+                <div class="setting-subtitle">自动识别和分析文本中的情感</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-tags"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">自动标签</div>
+                <div class="setting-subtitle">智能生成内容标签和分类</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-orange-500 to-red-500">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">智能提醒</div>
+                <div class="setting-subtitle">基于习惯的个性化提醒</div>
+            </div>
+            <div class="switch" onclick="toggleSwitch(this)"></div>
+        </div>
+    </div>
+    
+    <!-- 交互设置 -->
+    <div class="settings-section slide-in">
+        <div class="section-header">
+            <h3 class="font-semibold text-gray-800">交互设置</h3>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-cyan-500 to-blue-500">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">回应频率</div>
+                <div class="setting-subtitle">AI主动回应的频率</div>
+                <input type="range" class="slider" min="1" max="5" value="3" onchange="updateFrequency(this.value)">
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>少</span>
+                    <span>适中</span>
+                    <span>频繁</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-indigo-500 to-purple-500">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">语音类型</div>
+                <div class="setting-subtitle">选择AI的语音风格</div>
+                <div class="voice-selector">
+                    <div class="voice-option active" onclick="selectVoice('gentle')">温柔</div>
+                    <div class="voice-option" onclick="selectVoice('energetic')">活力</div>
+                    <div class="voice-option" onclick="selectVoice('calm')">沉稳</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-pink-500 to-rose-500">
+                <i class="fas fa-globe"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">语言偏好</div>
+                <div class="setting-subtitle">AI回应的语言风格</div>
+                <div class="language-grid">
+                    <div class="language-option active" onclick="selectLanguage('casual')">
+                        <div class="font-medium">轻松随意</div>
+                        <div class="text-xs text-gray-500">日常对话风格</div>
+                    </div>
+                    <div class="language-option" onclick="selectLanguage('formal')">
+                        <div class="font-medium">正式规范</div>
+                        <div class="text-xs text-gray-500">标准书面语</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 隐私设置 -->
+    <div class="settings-section slide-in">
+        <div class="section-header">
+            <h3 class="font-semibold text-gray-800">隐私与安全</h3>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-gray-500 to-gray-600">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">数据加密</div>
+                <div class="setting-subtitle">所有AI交互数据端到端加密</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-yellow-500 to-orange-500">
+                <i class="fas fa-history"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">学习记忆</div>
+                <div class="setting-subtitle">AI记住你的偏好和习惯</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-icon bg-gradient-to-r from-red-500 to-pink-500">
+                <i class="fas fa-trash"></i>
+            </div>
+            <div class="setting-content">
+                <div class="setting-title">清除AI记忆</div>
+                <div class="setting-subtitle">删除所有AI学习的个人数据</div>
+            </div>
+            <button class="text-red-500 text-sm font-medium" onclick="clearAIMemory()">
+                清除
+            </button>
+        </div>
+    </div>
+    
+    <!-- 重置按钮 -->
+    <div class="card p-4 text-center slide-in">
+        <button class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors" onclick="resetAISettings()">
+            <i class="fas fa-undo mr-2"></i>
+            恢复默认设置
+        </button>
+    </div>
+    
+    <script>
+        let currentPersonality = 'friendly';
+        let currentVoice = 'gentle';
+        let currentLanguage = 'casual';
+        
+        // 选择AI个性
+        function selectPersonality(type) {
+            currentPersonality = type;
+            
+            // 更新UI状态
+            document.querySelectorAll('.personality-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.personality-card').classList.add('active');
+            
+            // 更新预览
+            updatePreview();
+        }
+        
+        // 选择语音类型
+        function selectVoice(voice) {
+            currentVoice = voice;
+            
+            document.querySelectorAll('.voice-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // 选择语言风格
+        function selectLanguage(language) {
+            currentLanguage = language;
+            
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updatePreview();
+        }
+        
+        // 切换开关
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+        
+        // 更新频率
+        function updateFrequency(value) {
+            console.log('AI回应频率:', value);
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            const previews = {
+                friendly: {
+                    casual: '😊 你好！我是你的AI助手，很高兴能陪伴你记录生活的美好时光。有什么想要分享的吗？',
+                    formal: '😊 您好！我是您的AI助手，很荣幸能够协助您记录生活中的点点滴滴。请问有什么需要帮助的吗？'
+                },
+                professional: {
+                    casual: '🤓 你好，我是你的AI分析助手。我会帮你整理思路，提供专业建议。',
+                    formal: '🤓 您好，我是您的AI分析助手。我将为您提供专业的分析和建议服务。'
+                },
+                creative: {
+                    casual: '🎨 嗨！我是你的创意伙伴，准备好一起探索无限的想象空间了吗？',
+                    formal: '🎨 您好！我是您的创意助手，致力于激发您的创造力和想象力。'
+                },
+                humorous: {
+                    casual: '😄 哈喽！我是你的开心果AI，准备好让生活变得更有趣了吗？',
+                    formal: '😄 您好！我是您的幽默助手，希望能为您的生活增添一些轻松愉快的元素。'
+                }
+            };
+            
+            const preview = previews[currentPersonality][currentLanguage];
+            document.getElementById('aiPreview').textContent = preview;
+        }
+        
+        // 刷新预览
+        function refreshPreview() {
+            updatePreview();
+            
+            // 添加刷新动画
+            const preview = document.getElementById('aiPreview');
+            preview.style.opacity = '0.5';
+            setTimeout(() => {
+                preview.style.opacity = '1';
+            }, 300);
+        }
+        
+        // 清除AI记忆
+        function clearAIMemory() {
+            if (confirm('确定要清除所有AI学习的个人数据吗？此操作不可撤销。')) {
+                alert('AI记忆已清除');
+            }
+        }
+        
+        // 重置AI设置
+        function resetAISettings() {
+            if (confirm('确定要恢复所有AI设置到默认状态吗？')) {
+                // 重置所有设置
+                currentPersonality = 'friendly';
+                currentVoice = 'gentle';
+                currentLanguage = 'casual';
+                
+                // 重置UI状态
+                document.querySelectorAll('.personality-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                document.querySelector('[onclick="selectPersonality(\'friendly\')"]').classList.add('active');
+                
+                document.querySelectorAll('.voice-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                document.querySelector('[onclick="selectVoice(\'gentle\')"]').classList.add('active');
+                
+                document.querySelectorAll('.language-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                document.querySelector('[onclick="selectLanguage(\'casual\')"]').classList.add('active');
+                
+                updatePreview();
+                alert('AI设置已恢复默认');
+            }
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

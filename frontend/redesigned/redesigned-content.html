@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - 内容管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f9fafb;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+        
+        .filter-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .ai-writing-assistant {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .content-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid transparent;
+        }
+        
+        .content-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .content-item.diary { border-left-color: #f59e0b; }
+        .content-item.task { border-left-color: #10b981; }
+        .content-item.contact { border-left-color: #8b5cf6; }
+        .content-item.note { border-left-color: #3b82f6; }
+        .content-item.goal { border-left-color: #ef4444; }
+        .content-item.travel { border-left-color: #06b6d4; }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            margin-bottom: 12px;
+        }
+        
+        .content-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            gap: 4px;
+        }
+        
+        .type-diary { background: #fef3c7; color: #d97706; }
+        .type-task { background: #d1fae5; color: #059669; }
+        .type-contact { background: #ede9fe; color: #7c3aed; }
+        .type-note { background: #dbeafe; color: #2563eb; }
+        .type-goal { background: #fee2e2; color: #dc2626; }
+        .type-travel { background: #cffafe; color: #0891b2; }
+        
+        .ai-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .ai-tag {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .ai-tag.auto {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+        
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .view-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6b7280;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .view-btn.active {
+            background: white;
+            color: #3b82f6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .ai-insight {
+            background: #fef7ff;
+            border: 1px solid #e879f9;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #a21caf;
+        }
+        
+        .content-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .mood-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 搜索和筛选栏 -->
+    <div class="search-filter-bar fade-in">
+        <div class="relative">
+            <input type="text" class="search-input" placeholder="搜索内容、标签、AI洞察..." 
+                   oninput="handleContentSearch()" onkeypress="handleSearchKeyPress(event)">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterContent('all')">全部</button>
+            <button class="filter-tab" onclick="filterContent('diary')">
+                <i class="fas fa-book mr-1"></i>日记
+            </button>
+            <button class="filter-tab" onclick="filterContent('task')">
+                <i class="fas fa-tasks mr-1"></i>任务
+            </button>
+            <button class="filter-tab" onclick="openRelationshipPage()">
+                <i class="fas fa-users mr-1"></i>人脉
+            </button>
+            <button class="filter-tab" onclick="filterContent('note')">
+                <i class="fas fa-sticky-note mr-1"></i>笔记
+            </button>
+            <button class="filter-tab" onclick="filterContent('goal')">
+                <i class="fas fa-target mr-1"></i>目标
+            </button>
+            <button class="filter-tab" onclick="filterContent('travel')">
+                <i class="fas fa-plane mr-1"></i>旅行
+            </button>
+        </div>
+    </div>
+    
+    <!-- AI写作助手 -->
+    <div class="ai-writing-assistant fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-magic text-blue-500 mr-2"></i>
+                AI写作助手
+            </h3>
+            <button class="text-blue-500 text-sm" onclick="openAIWriter()">
+                <i class="fas fa-edit mr-1"></i>开始创作
+            </button>
+        </div>
+        
+        <div class="text-sm text-gray-700 mb-2">
+            💡 基于你的写作习惯，AI建议今天写一篇关于"春日感悟"的日记
+        </div>
+        
+        <div class="flex gap-2">
+            <button class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs" onclick="useAISuggestion('春日感悟')">
+                使用建议
+            </button>
+            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs" onclick="getMoreSuggestions()">
+                更多建议
+            </button>
+        </div>
+    </div>
+    
+    <!-- 视图切换 -->
+    <div class="view-toggle fade-in">
+        <button class="view-btn active" onclick="switchView('list')">
+            <i class="fas fa-list mr-1"></i>列表
+        </button>
+        <button class="view-btn" onclick="switchView('grid')">
+            <i class="fas fa-th mr-1"></i>网格
+        </button>
+        <button class="view-btn" onclick="switchView('timeline')">
+            <i class="fas fa-clock mr-1"></i>时间轴
+        </button>
+    </div>
+    
+    <!-- 内容列表 -->
+    <div class="content-grid" id="contentGrid">
+        <!-- 日记条目 -->
+        <div class="content-item diary slide-in" data-type="diary" onclick="openContent('diary', 1)">
+            <div class="content-header">
+                <div class="flex items-center flex-1">
+                    <span class="content-type type-diary">
+                        <i class="fas fa-book"></i>
+                        日记
+                    </span>
+                    <div class="ml-auto flex items-center gap-2">
+                        <div class="mood-indicator bg-yellow-100 text-yellow-600">😊</div>
+                        <span class="text-xs text-gray-500">今天 20:30</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="font-semibold text-gray-800 mb-2">春日漫步的思考</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">
+                今天在公园里走了很久，看到樱花开始绽放，心情特别好。春天总是能给人带来希望和活力，让我想起了很多美好的回忆...
+            </p>
+            
+            <div class="ai-insight">
+                <i class="fas fa-brain mr-1"></i>
+                AI洞察：这篇日记体现了你对自然的热爱和积极的生活态度，情感倾向为正面乐观
+            </div>
+            
+            <div class="ai-tags">
+                <span class="ai-tag">生活感悟</span>
+                <span class="ai-tag">自然</span>
+                <span class="ai-tag auto">
+                    <i class="fas fa-magic"></i>AI推荐
+                </span>
+            </div>
+            
+            <div class="content-stats">
+                <span><i class="fas fa-eye mr-1"></i>已读 3 次</span>
+                <span><i class="fas fa-heart mr-1"></i>收藏</span>
+                <span><i class="fas fa-share mr-1"></i>分享</span>
+            </div>
+        </div>
+        
+        <!-- 任务条目 -->
+        <div class="content-item task slide-in" data-type="task" onclick="openContent('task', 2)">
+            <div class="content-header">
+                <div class="flex items-center flex-1">
+                    <span class="content-type type-task">
+                        <i class="fas fa-tasks"></i>
+                        任务
+                    </span>
+                    <div class="ml-auto flex items-center gap-2">
+                        <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">已完成</span>
+                        <span class="text-xs text-gray-500">今天 18:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="font-semibold text-gray-800 mb-2">项目进度回顾</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">
+                本周完成了数据库设计和API接口开发，团队协作很顺利。下周计划开始前端界面开发...
+            </p>
+            
+            <div class="ai-insight">
+                <i class="fas fa-chart-line mr-1"></i>
+                AI分析：你的工作效率在提升，建议保持当前的工作节奏
+            </div>
+            
+            <div class="ai-tags">
+                <span class="ai-tag">工作</span>
+                <span class="ai-tag">项目管理</span>
+                <span class="ai-tag auto">
+                    <i class="fas fa-magic"></i>高效率
+                </span>
+            </div>
+            
+            <div class="content-stats">
+                <span><i class="fas fa-clock mr-1"></i>用时 2小时</span>
+                <span><i class="fas fa-star mr-1"></i>重要</span>
+                <span><i class="fas fa-edit mr-1"></i>编辑</span>
+            </div>
+        </div>
+        
+        <!-- 人脉条目 -->
+        <div class="content-item contact slide-in" data-type="contact" onclick="openContent('contact', 3)">
+            <div class="content-header">
+                <div class="flex items-center flex-1">
+                    <span class="content-type type-contact">
+                        <i class="fas fa-users"></i>
+                        人脉
+                    </span>
+                    <div class="ml-auto flex items-center gap-2">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=24&h=24&fit=crop&crop=face" 
+                             class="w-6 h-6 rounded-full" alt="李雷">
+                        <span class="text-xs text-gray-500">昨天 14:30</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="font-semibold text-gray-800 mb-2">与李雷的工作讨论</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">
+                和李雷讨论了新项目的技术方案，他提出了一些很有价值的建议。特别是在数据库优化方面...
+            </p>
+            
+            <div class="ai-insight">
+                <i class="fas fa-handshake mr-1"></i>
+                AI建议：与李雷的互动频率很高，建议定期保持联系
+            </div>
+            
+            <div class="ai-tags">
+                <span class="ai-tag">工作讨论</span>
+                <span class="ai-tag">技术交流</span>
+                <span class="ai-tag auto">
+                    <i class="fas fa-magic"></i>重要联系人
+                </span>
+            </div>
+            
+            <div class="content-stats">
+                <span><i class="fas fa-heart mr-1"></i>亲密度 +5</span>
+                <span><i class="fas fa-comment mr-1"></i>重要对话</span>
+                <span><i class="fas fa-user mr-1"></i>查看联系人</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 浮动添加按钮 -->
+    <div class="fab" onclick="showCreateOptions()">
+        <i class="fas fa-plus"></i>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        let currentView = 'list';
+        
+        // 内容搜索
+        function handleContentSearch() {
+            const query = document.querySelector('.search-input').value;
+            console.log('搜索内容:', query);
+            // 实现搜索逻辑
+        }
+        
+        function handleSearchKeyPress(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query) {
+                    alert(`搜索内容: ${query}`);
+                }
+            }
+        }
+        
+        // 筛选内容
+        function filterContent(type) {
+            currentFilter = type;
+            
+            // 更新筛选按钮状态
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 筛选内容项
+            const items = document.querySelectorAll('.content-item');
+            items.forEach(item => {
+                if (type === 'all' || item.dataset.type === type) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 切换视图
+        function switchView(view) {
+            currentView = view;
+            
+            // 更新视图按钮状态
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 这里可以实现不同视图的布局切换
+            console.log('切换到视图:', view);
+        }
+        
+        // AI写作助手
+        function openAIWriter() {
+            alert('打开AI写作助手');
+        }
+        
+        function useAISuggestion(topic) {
+            alert(`使用AI建议创作: ${topic}`);
+        }
+        
+        function getMoreSuggestions() {
+            alert('获取更多AI建议');
+        }
+        
+        // 打开内容
+        function openContent(type, id) {
+            alert(`打开${type}内容，ID: ${id}`);
+        }
+        
+        // 显示创建选项
+        function showCreateOptions() {
+            alert('显示创建选项');
+        }
+
+        // 打开人际关系页面
+        function openRelationshipPage() {
+            // 在实际应用中，这里会跳转到人际关系页面
+            alert('跳转到人际关系管理页面');
+            console.log('导航到人际关系页面');
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

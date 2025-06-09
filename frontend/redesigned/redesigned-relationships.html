@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - 人际关系</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .relationship-header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .relationship-map {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .center-node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 10;
+        }
+        
+        .relationship-node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        
+        .relationship-node:hover {
+            transform: scale(1.1);
+            z-index: 15;
+        }
+        
+        .node-family { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .node-friend { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .node-colleague { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .node-other { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+            z-index: 1;
+            transform-origin: left center;
+        }
+        
+        .reminders-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .reminder-item:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+        
+        .reminder-item.urgent {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .reminder-item.today {
+            background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .reminder-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .contact-list {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-item:hover {
+            background: #f8f9fa;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        
+        .contact-avatar.placeholder {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .intimacy-bar {
+            width: 60px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .intimacy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .ai-insights {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: start;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+        }
+        
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+        
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            background: #0ea5e9;
+            color: white;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .floating-add {
+            position: fixed;
+            bottom: 100px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .floating-add:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 人际关系头部 -->
+    <div class="relationship-header fade-in">
+        <h1 class="text-xl font-bold mb-2">人际关系网络</h1>
+        <p class="text-white/80 text-sm">AI帮你管理和分析人际关系</p>
+        <div class="mt-4 flex justify-center gap-4 text-sm">
+            <div class="text-center">
+                <div class="font-bold">23</div>
+                <div class="text-white/70 text-xs">联系人</div>
+            </div>
+            <div class="text-center">
+                <div class="font-bold">5</div>
+                <div class="text-white/70 text-xs">今日互动</div>
+            </div>
+            <div class="text-center">
+                <div class="font-bold">88%</div>
+                <div class="text-white/70 text-xs">平均亲密度</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 关系图谱 -->
+    <div class="relationship-map slide-in">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-800">关系图谱</h3>
+            <button class="text-purple-500 text-sm" onclick="expandRelationshipMap()">
+                <i class="fas fa-expand mr-1"></i>全屏查看
+            </button>
+        </div>
+        
+        <!-- 中心节点（自己） -->
+        <div class="center-node">我</div>
+        
+        <!-- 连接线 -->
+        <div class="connection-line" style="top: 50%; left: 50%; width: 80px; transform: rotate(45deg) translateX(30px);"></div>
+        <div class="connection-line" style="top: 50%; left: 50%; width: 70px; transform: rotate(-30deg) translateX(30px);"></div>
+        <div class="connection-line" style="top: 50%; left: 50%; width: 90px; transform: rotate(120deg) translateX(30px);"></div>
+        <div class="connection-line" style="top: 50%; left: 50%; width: 60px; transform: rotate(-120deg) translateX(30px);"></div>
+        
+        <!-- 关系节点 -->
+        <div class="relationship-node node-family" style="top: 20%; left: 70%;" onclick="showContactDetail('妈妈')">
+            妈妈
+        </div>
+        <div class="relationship-node node-friend" style="top: 30%; left: 20%;" onclick="showContactDetail('李雷')">
+            李雷
+        </div>
+        <div class="relationship-node node-colleague" style="top: 70%; left: 75%;" onclick="showContactDetail('张三')">
+            张三
+        </div>
+        <div class="relationship-node node-friend" style="top: 75%; left: 25%;" onclick="showContactDetail('小红')">
+            小红
+        </div>
+        <div class="relationship-node node-other" style="top: 15%; left: 30%;" onclick="showContactDetail('王老师')">
+            王老师
+        </div>
+        
+        <!-- 图例 -->
+        <div class="absolute bottom-2 left-2 text-xs text-gray-500">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span>家人</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span>朋友</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <span>同事</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <span>其他</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 重要提醒 -->
+    <div class="reminders-section slide-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-bell text-orange-500 mr-2"></i>
+                重要提醒
+            </h3>
+            <button class="text-orange-500 text-sm" onclick="addReminder()">
+                <i class="fas fa-plus mr-1"></i>添加
+            </button>
+        </div>
+        
+        <div class="reminder-item urgent" onclick="handleReminder('生日')">
+            <div class="reminder-icon bg-red-500">
+                <i class="fas fa-birthday-cake"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">李雷的生日</div>
+                <div class="text-xs text-gray-600">明天 - 记得准备生日礼物</div>
+            </div>
+            <div class="text-xs text-red-600 font-medium">紧急</div>
+        </div>
+        
+        <div class="reminder-item today" onclick="handleReminder('聚会')">
+            <div class="reminder-icon bg-blue-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">同学聚会</div>
+                <div class="text-xs text-gray-600">今晚7点 - 老地方见面</div>
+            </div>
+            <div class="text-xs text-blue-600 font-medium">今天</div>
+        </div>
+        
+        <div class="reminder-item" onclick="handleReminder('联系')">
+            <div class="reminder-icon bg-green-500">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">联系张三</div>
+                <div class="text-xs text-gray-600">已经2周没联系了</div>
+            </div>
+            <div class="text-xs text-gray-500">本周</div>
+        </div>
+    </div>
+    
+    <!-- AI洞察 -->
+    <div class="ai-insights slide-in">
+        <div class="flex items-center mb-3">
+            <i class="fas fa-brain text-blue-500 mr-2"></i>
+            <h3 class="font-semibold text-gray-800">AI关系洞察</h3>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm text-gray-800 font-medium">社交活跃度提升</div>
+                <div class="text-xs text-gray-600 mt-1">本月与朋友的互动频率比上月增加了40%</div>
+            </div>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm text-gray-800 font-medium">亲密关系稳定</div>
+                <div class="text-xs text-gray-600 mt-1">与家人和密友的关系保持良好，建议继续保持</div>
+            </div>
+        </div>
+        
+        <div class="insight-item">
+            <div class="insight-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="flex-1">
+                <div class="text-sm text-gray-800 font-medium">拓展社交圈</div>
+                <div class="text-xs text-gray-600 mt-1">建议多参加社交活动，认识新朋友</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 联系人列表 -->
+    <div class="contact-list slide-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">最近联系</h3>
+            <button class="text-purple-500 text-sm" onclick="viewAllContacts()">查看全部</button>
+        </div>
+        
+        <div class="contact-item" onclick="showContactDetail('李雷')">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                 class="contact-avatar" alt="李雷">
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <div class="font-medium text-gray-800 text-sm">李雷</div>
+                    <div class="text-xs text-gray-500">2小时前</div>
+                </div>
+                <div class="text-xs text-gray-600">讨论了项目进展</div>
+                <div class="intimacy-bar">
+                    <div class="intimacy-fill" style="width: 85%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-item" onclick="showContactDetail('小红')">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                 class="contact-avatar" alt="小红">
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <div class="font-medium text-gray-800 text-sm">小红</div>
+                    <div class="text-xs text-gray-500">昨天</div>
+                </div>
+                <div class="text-xs text-gray-600">分享了旅行照片</div>
+                <div class="intimacy-bar">
+                    <div class="intimacy-fill" style="width: 92%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-item" onclick="showContactDetail('张三')">
+            <div class="contact-avatar placeholder">张</div>
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <div class="font-medium text-gray-800 text-sm">张三</div>
+                    <div class="text-xs text-gray-500">3天前</div>
+                </div>
+                <div class="text-xs text-gray-600">工作会议讨论</div>
+                <div class="intimacy-bar">
+                    <div class="intimacy-fill" style="width: 65%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 浮动添加按钮 -->
+    <div class="floating-add" onclick="addNewContact()">
+        <i class="fas fa-user-plus"></i>
+    </div>
+    
+    <script>
+        // 展开关系图谱
+        function expandRelationshipMap() {
+            alert('打开全屏关系图谱');
+        }
+        
+        // 显示联系人详情
+        function showContactDetail(name) {
+            alert(`查看 ${name} 的详细信息`);
+        }
+        
+        // 处理提醒事项
+        function handleReminder(type) {
+            alert(`处理${type}提醒`);
+        }
+        
+        // 添加提醒
+        function addReminder() {
+            alert('添加新提醒');
+        }
+        
+        // 查看所有联系人
+        function viewAllContacts() {
+            alert('查看所有联系人');
+        }
+        
+        // 添加新联系人
+        function addNewContact() {
+            alert('添加新联系人');
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+        
+        // 关系节点动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const nodes = document.querySelectorAll('.relationship-node');
+            nodes.forEach((node, index) => {
+                node.style.opacity = '0';
+                node.style.transform = 'scale(0)';
+                
+                setTimeout(() => {
+                    node.style.transition = 'all 0.5s ease-out';
+                    node.style.opacity = '1';
+                    node.style.transform = 'scale(1)';
+                }, 800 + index * 200);
+            });
+            
+            // 连接线动画
+            const lines = document.querySelectorAll('.connection-line');
+            lines.forEach((line, index) => {
+                line.style.width = '0';
+                setTimeout(() => {
+                    line.style.transition = 'width 0.8s ease-out';
+                    line.style.width = line.dataset.width || '80px';
+                }, 1200 + index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

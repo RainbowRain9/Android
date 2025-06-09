@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记App - 功能展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 自定义样式 */
+        .feature-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tool-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-item:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .demo-area {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .typing-animation {
+            border-right: 2px solid #667eea;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: transparent; }
+            51%, 100% { border-color: #667eea; }
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .notebook-type {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notebook-type:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .ai-suggestion {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #2196f3;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-brain text-2xl"></i>
+                    <h1 class="text-xl font-bold">AI日记App - 功能展示</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="hover:text-blue-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>返回主页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- 功能概览 -->
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold gradient-text mb-4">智能功能体验中心</h2>
+            <p class="text-gray-600 text-lg">探索AI日记App的各种智能功能和实用工具</p>
+        </div>
+
+        <!-- 核心功能展示 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <!-- AI写作助手 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('aiWritingModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-pen-fancy text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">AI写作助手</h3>
+                    <p class="text-gray-600">智能内容生成、续写和优化建议</p>
+                </div>
+            </div>
+
+            <!-- 情感分析 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('emotionAnalysisModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">情感分析</h3>
+                    <p class="text-gray-600">智能识别情感状态和心理趋势</p>
+                </div>
+            </div>
+
+            <!-- 智能标签 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('smartTagsModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tags text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">智能标签</h3>
+                    <p class="text-gray-600">自动生成和推荐相关标签</p>
+                </div>
+            </div>
+
+            <!-- 记本模板 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('templatesModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">记本模板</h3>
+                    <p class="text-gray-600">丰富的预设模板和自定义选项</p>
+                </div>
+            </div>
+
+            <!-- 数据可视化 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('dataVizModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">数据可视化</h3>
+                    <p class="text-gray-600">直观的图表和趋势分析</p>
+                </div>
+            </div>
+
+            <!-- 智能提醒 -->
+            <div class="feature-card rounded-xl p-6 tool-item" onclick="openModal('smartRemindersModal')">
+                <div class="text-center">
+                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-bell text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">智能提醒</h3>
+                    <p class="text-gray-600">个性化提醒和习惯养成</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实用工具区 -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h3 class="text-2xl font-bold gradient-text mb-6 text-center">实用工具箱</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('wordCountModal')">
+                    <i class="fas fa-calculator text-2xl mb-2 text-blue-500"></i>
+                    <p class="font-medium">字数统计</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('moodTrackerModal')">
+                    <i class="fas fa-smile text-2xl mb-2 text-yellow-500"></i>
+                    <p class="font-medium">心情追踪</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('goalTrackerModal')">
+                    <i class="fas fa-target text-2xl mb-2 text-green-500"></i>
+                    <p class="font-medium">目标追踪</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('habitTrackerModal')">
+                    <i class="fas fa-check-circle text-2xl mb-2 text-purple-500"></i>
+                    <p class="font-medium">习惯打卡</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('timelineModal')">
+                    <i class="fas fa-clock text-2xl mb-2 text-red-500"></i>
+                    <p class="font-medium">时间轴</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('searchModal')">
+                    <i class="fas fa-search text-2xl mb-2 text-indigo-500"></i>
+                    <p class="font-medium">智能搜索</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('exportModal')">
+                    <i class="fas fa-download text-2xl mb-2 text-teal-500"></i>
+                    <p class="font-medium">数据导出</p>
+                </div>
+                <div class="tool-item bg-gray-50 rounded-lg p-4 text-center" onclick="openModal('backupModal')">
+                    <i class="fas fa-cloud text-2xl mb-2 text-gray-500"></i>
+                    <p class="font-medium">云端备份</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框区域 -->
+
+    <!-- AI写作助手模态框 -->
+    <div id="aiWritingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('aiWritingModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">AI写作助手</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">智能内容生成演示</h4>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">输入主题或关键词：</label>
+                    <input type="text" id="writingTopic" class="w-full p-3 border rounded-lg" placeholder="例如：今天的工作感悟">
+                    <button onclick="generateContent()" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                        <i class="fas fa-magic mr-2"></i>生成内容
+                    </button>
+                </div>
+                <div id="generatedContent" class="bg-white p-4 rounded-lg border min-h-[100px]">
+                    <p class="text-gray-500 italic">AI生成的内容将在这里显示...</p>
+                </div>
+                <div class="mt-4">
+                    <h5 class="font-medium mb-2">AI建议：</h5>
+                    <div id="aiSuggestions" class="space-y-2">
+                        <!-- AI建议将动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 情感分析模态框 -->
+    <div id="emotionAnalysisModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('emotionAnalysisModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">情感分析</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">文本情感分析演示</h4>
+                <textarea id="emotionText" class="w-full p-3 border rounded-lg h-32" placeholder="输入一段文字，AI将分析其中的情感..."></textarea>
+                <button onclick="analyzeEmotion()" class="mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                    <i class="fas fa-brain mr-2"></i>分析情感
+                </button>
+                <div id="emotionResult" class="mt-4">
+                    <!-- 情感分析结果 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能标签模态框 -->
+    <div id="smartTagsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('smartTagsModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">智能标签</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">自动标签生成演示</h4>
+                <textarea id="tagText" class="w-full p-3 border rounded-lg h-32" placeholder="输入内容，AI将自动生成相关标签..."></textarea>
+                <button onclick="generateTags()" class="mt-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">
+                    <i class="fas fa-tags mr-2"></i>生成标签
+                </button>
+                <div id="generatedTags" class="mt-4">
+                    <!-- 生成的标签 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 记本模板模态框 -->
+    <div id="templatesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('templatesModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">记本模板</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">模板选择</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="notebook-type bg-orange-100 p-4 rounded-lg border-2 border-orange-200" onclick="selectTemplate('diary')">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-book text-orange-500 text-xl mr-3"></i>
+                            <h5 class="font-semibold">日记模板</h5>
+                        </div>
+                        <p class="text-sm text-gray-600">记录生活点滴，情感表达</p>
+                    </div>
+                    <div class="notebook-type bg-green-100 p-4 rounded-lg border-2 border-green-200" onclick="selectTemplate('task')">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-tasks text-green-500 text-xl mr-3"></i>
+                            <h5 class="font-semibold">任务模板</h5>
+                        </div>
+                        <p class="text-sm text-gray-600">目标管理，待办事项</p>
+                    </div>
+                    <div class="notebook-type bg-purple-100 p-4 rounded-lg border-2 border-purple-200" onclick="selectTemplate('contact')">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-users text-purple-500 text-xl mr-3"></i>
+                            <h5 class="font-semibold">人脉模板</h5>
+                        </div>
+                        <p class="text-sm text-gray-600">关系管理，互动记录</p>
+                    </div>
+                    <div class="notebook-type bg-blue-100 p-4 rounded-lg border-2 border-blue-200" onclick="selectTemplate('note')">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-sticky-note text-blue-500 text-xl mr-3"></i>
+                            <h5 class="font-semibold">笔记模板</h5>
+                        </div>
+                        <p class="text-sm text-gray-600">知识整理，学习记录</p>
+                    </div>
+                </div>
+                <div id="templatePreview" class="mt-4 bg-white p-4 rounded-lg border">
+                    <p class="text-gray-500 italic">选择模板查看预览...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据可视化模态框 -->
+    <div id="dataVizModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('dataVizModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">数据可视化</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">记录统计图表</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <canvas id="recordsChart" width="300" height="200"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="emotionChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h5 class="font-medium mb-2">数据洞察：</h5>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="text-sm">📈 本月记录数量比上月增长了25%</p>
+                        <p class="text-sm">😊 积极情感占比达到78%</p>
+                        <p class="text-sm">🎯 目标完成率为85%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能提醒模态框 -->
+    <div id="smartRemindersModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('smartRemindersModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">智能提醒</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">个性化提醒设置</h4>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 class="font-medium">写日记提醒</h5>
+                                <p class="text-sm text-gray-600">每天晚上9点提醒写日记</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 class="font-medium">目标检查</h5>
+                                <p class="text-sm text-gray-600">每周日回顾目标进度</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 class="font-medium">人脉维护</h5>
+                                <p class="text-sm text-gray-600">提醒联系重要朋友</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 实用工具模态框 -->
+
+    <!-- 字数统计模态框 -->
+    <div id="wordCountModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('wordCountModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">字数统计工具</h2>
+            <div class="demo-area">
+                <textarea id="wordCountText" class="w-full p-3 border rounded-lg h-32" placeholder="输入文字进行统计..." oninput="updateWordCount()"></textarea>
+                <div id="wordCountResult" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-blue-500" id="charCount">0</div>
+                        <div class="text-sm text-gray-600">字符数</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-green-500" id="wordCount">0</div>
+                        <div class="text-sm text-gray-600">词数</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-purple-500" id="lineCount">0</div>
+                        <div class="text-sm text-gray-600">行数</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-orange-500" id="readTime">0</div>
+                        <div class="text-sm text-gray-600">阅读时间(分)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 心情追踪模态框 -->
+    <div id="moodTrackerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('moodTrackerModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">心情追踪器</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">今日心情</h4>
+                <div class="grid grid-cols-5 gap-3 mb-4">
+                    <div class="mood-item text-center p-3 rounded-lg cursor-pointer hover:bg-gray-100" onclick="selectMood('😢', '难过')">
+                        <div class="text-3xl mb-1">😢</div>
+                        <div class="text-xs">难过</div>
+                    </div>
+                    <div class="mood-item text-center p-3 rounded-lg cursor-pointer hover:bg-gray-100" onclick="selectMood('😐', '一般')">
+                        <div class="text-3xl mb-1">😐</div>
+                        <div class="text-xs">一般</div>
+                    </div>
+                    <div class="mood-item text-center p-3 rounded-lg cursor-pointer hover:bg-gray-100" onclick="selectMood('😊', '开心')">
+                        <div class="text-3xl mb-1">😊</div>
+                        <div class="text-xs">开心</div>
+                    </div>
+                    <div class="mood-item text-center p-3 rounded-lg cursor-pointer hover:bg-gray-100" onclick="selectMood('😄', '很开心')">
+                        <div class="text-3xl mb-1">😄</div>
+                        <div class="text-xs">很开心</div>
+                    </div>
+                    <div class="mood-item text-center p-3 rounded-lg cursor-pointer hover:bg-gray-100" onclick="selectMood('🤩', '超棒')">
+                        <div class="text-3xl mb-1">🤩</div>
+                        <div class="text-xs">超棒</div>
+                    </div>
+                </div>
+                <div id="moodResult" class="bg-white p-4 rounded-lg border">
+                    <p class="text-gray-500 italic">选择你的心情...</p>
+                </div>
+                <div class="mt-4">
+                    <canvas id="moodTrendChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 目标追踪模态框 -->
+    <div id="goalTrackerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('goalTrackerModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">目标追踪器</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">我的目标</h4>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-medium">每天写日记</h5>
+                            <span class="text-sm text-gray-500">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">已坚持 17/20 天</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-medium">阅读30本书</h5>
+                            <span class="text-sm text-gray-500">60%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">已完成 18/30 本</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-medium">学习新技能</h5>
+                            <span class="text-sm text-gray-500">40%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: 40%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">进度良好，继续加油！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 习惯打卡模态框 -->
+    <div id="habitTrackerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('habitTrackerModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">习惯打卡</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">本周习惯追踪</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">习惯</th>
+                                <th class="text-center p-2">周一</th>
+                                <th class="text-center p-2">周二</th>
+                                <th class="text-center p-2">周三</th>
+                                <th class="text-center p-2">周四</th>
+                                <th class="text-center p-2">周五</th>
+                                <th class="text-center p-2">周六</th>
+                                <th class="text-center p-2">周日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="p-2">早起</td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-times text-red-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2 cursor-pointer" onclick="toggleHabit(this)"><i class="fas fa-circle text-gray-300"></i></td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2">运动</td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-times text-red-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-times text-red-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2 cursor-pointer" onclick="toggleHabit(this)"><i class="fas fa-circle text-gray-300"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">阅读</td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-check text-green-500"></i></td>
+                                <td class="text-center p-2"><i class="fas fa-times text-red-500"></i></td>
+                                <td class="text-center p-2 cursor-pointer" onclick="toggleHabit(this)"><i class="fas fa-circle text-gray-300"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他工具模态框 -->
+    <div id="timelineModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('timelineModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">时间轴视图</h2>
+            <div class="demo-area">
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <div class="text-sm text-gray-500">2024年1月15日 09:30</div>
+                            <div class="font-medium">完成了重要项目提案</div>
+                            <div class="text-sm text-gray-600">今天终于完成了这个月来一直在准备的项目提案...</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <div class="text-sm text-gray-500">2024年1月14日 20:15</div>
+                            <div class="font-medium">与老朋友聚餐</div>
+                            <div class="text-sm text-gray-600">久违的聚会，聊了很多有趣的话题...</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-3 h-3 bg-purple-500 rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <div class="text-sm text-gray-500">2024年1月13日 14:20</div>
+                            <div class="font-medium">学习新技能</div>
+                            <div class="text-sm text-gray-600">开始学习AI相关知识，很有挑战性...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('searchModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">智能搜索</h2>
+            <div class="demo-area">
+                <div class="relative mb-4">
+                    <input type="text" id="searchInput" class="w-full p-3 pl-10 border rounded-lg" placeholder="搜索记录、标签、内容..." oninput="performSearch()">
+                    <i class="fas fa-search absolute left-3 top-4 text-gray-400"></i>
+                </div>
+                <div id="searchResults" class="space-y-3">
+                    <p class="text-gray-500 italic">输入关键词开始搜索...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('exportModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">数据导出</h2>
+            <div class="demo-area">
+                <h4 class="font-semibold mb-3">选择导出格式</h4>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <button class="export-option p-4 border rounded-lg hover:bg-gray-50" onclick="exportData('pdf')">
+                        <i class="fas fa-file-pdf text-red-500 text-2xl mb-2"></i>
+                        <div class="font-medium">PDF格式</div>
+                        <div class="text-sm text-gray-600">适合打印和分享</div>
+                    </button>
+                    <button class="export-option p-4 border rounded-lg hover:bg-gray-50" onclick="exportData('word')">
+                        <i class="fas fa-file-word text-blue-500 text-2xl mb-2"></i>
+                        <div class="font-medium">Word文档</div>
+                        <div class="text-sm text-gray-600">便于编辑和修改</div>
+                    </button>
+                    <button class="export-option p-4 border rounded-lg hover:bg-gray-50" onclick="exportData('excel')">
+                        <i class="fas fa-file-excel text-green-500 text-2xl mb-2"></i>
+                        <div class="font-medium">Excel表格</div>
+                        <div class="text-sm text-gray-600">数据分析和统计</div>
+                    </button>
+                    <button class="export-option p-4 border rounded-lg hover:bg-gray-50" onclick="exportData('json')">
+                        <i class="fas fa-file-code text-purple-500 text-2xl mb-2"></i>
+                        <div class="font-medium">JSON数据</div>
+                        <div class="text-sm text-gray-600">程序处理和备份</div>
+                    </button>
+                </div>
+                <div id="exportProgress" class="hidden">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            <span>正在导出数据...</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="exportProgressBar" class="progress-bar h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="backupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('backupModal')">&times;</span>
+            <h2 class="text-2xl font-bold gradient-text mb-4">云端备份</h2>
+            <div class="demo-area">
+                <div class="bg-green-50 p-4 rounded-lg mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        <span class="font-medium">自动备份已启用</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">最后备份时间：2024年1月15日 10:30</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div>
+                            <div class="font-medium">备份频率</div>
+                            <div class="text-sm text-gray-600">每天自动备份</div>
+                        </div>
+                        <select class="border rounded px-3 py-1">
+                            <option>每天</option>
+                            <option>每周</option>
+                            <option>每月</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div>
+                            <div class="font-medium">备份内容</div>
+                            <div class="text-sm text-gray-600">所有记录和设置</div>
+                        </div>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">配置</button>
+                    </div>
+                    <button onclick="manualBackup()" class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i>立即备份
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模态框控制
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+
+            // 特殊初始化
+            if (modalId === 'dataVizModal') {
+                setTimeout(initCharts, 100);
+            } else if (modalId === 'moodTrackerModal') {
+                setTimeout(initMoodChart, 100);
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // AI写作助手功能
+        function generateContent() {
+            const topic = document.getElementById('writingTopic').value;
+            const contentDiv = document.getElementById('generatedContent');
+            const suggestionsDiv = document.getElementById('aiSuggestions');
+
+            if (!topic.trim()) {
+                contentDiv.innerHTML = '<p class="text-red-500">请输入主题或关键词</p>';
+                return;
+            }
+
+            // 模拟AI生成内容
+            contentDiv.innerHTML = '<div class="typing-animation">AI正在生成内容...</div>';
+
+            setTimeout(() => {
+                const generatedText = `关于"${topic}"的思考：
+
+今天在思考${topic}这个话题时，我意识到这不仅仅是一个简单的概念，而是一个值得深入探讨的主题。从不同的角度来看，${topic}都有其独特的价值和意义。
+
+在我的个人经历中，${topic}给我带来了很多启发。它让我明白了成长的重要性，也让我学会了如何更好地面对挑战。
+
+未来，我希望能够在${topic}这个方面继续深入学习和实践，不断提升自己的认知和能力。`;
+
+                contentDiv.innerHTML = `<div class="whitespace-pre-line">${generatedText}</div>`;
+
+                // 生成AI建议
+                suggestionsDiv.innerHTML = `
+                    <div class="ai-suggestion p-3 rounded-lg mb-2">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                        建议添加具体的例子来支撑你的观点
+                    </div>
+                    <div class="ai-suggestion p-3 rounded-lg mb-2">
+                        <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                        可以考虑从数据角度分析这个话题
+                    </div>
+                    <div class="ai-suggestion p-3 rounded-lg">
+                        <i class="fas fa-users text-green-500 mr-2"></i>
+                        分享给朋友听听他们的看法
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        // 情感分析功能
+        function analyzeEmotion() {
+            const text = document.getElementById('emotionText').value;
+            const resultDiv = document.getElementById('emotionResult');
+
+            if (!text.trim()) {
+                resultDiv.innerHTML = '<p class="text-red-500">请输入要分析的文字</p>';
+                return;
+            }
+
+            // 模拟情感分析
+            resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin text-2xl"></i><p>正在分析情感...</p></div>';
+
+            setTimeout(() => {
+                const emotions = [
+                    { name: '积极', value: 75, color: 'green' },
+                    { name: '中性', value: 20, color: 'gray' },
+                    { name: '消极', value: 5, color: 'red' }
+                ];
+
+                let html = '<h5 class="font-medium mb-3">情感分析结果：</h5>';
+                emotions.forEach(emotion => {
+                    html += `
+                        <div class="flex items-center justify-between mb-2">
+                            <span>${emotion.name}</span>
+                            <div class="flex items-center">
+                                <div class="w-32 bg-gray-200 rounded-full h-2 mr-2">
+                                    <div class="bg-${emotion.color}-500 h-2 rounded-full" style="width: ${emotion.value}%"></div>
+                                </div>
+                                <span class="text-sm">${emotion.value}%</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '<div class="mt-4 p-3 bg-green-50 rounded-lg"><i class="fas fa-smile text-green-500 mr-2"></i>整体情感倾向：积极乐观</div>';
+
+                resultDiv.innerHTML = html;
+            }, 1500);
+        }
+
+        // 智能标签生成
+        function generateTags() {
+            const text = document.getElementById('tagText').value;
+            const tagsDiv = document.getElementById('generatedTags');
+
+            if (!text.trim()) {
+                tagsDiv.innerHTML = '<p class="text-red-500">请输入内容</p>';
+                return;
+            }
+
+            // 模拟标签生成
+            tagsDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> 正在生成标签...</div>';
+
+            setTimeout(() => {
+                const tags = ['工作', '学习', '成长', '思考', '计划', '目标', '效率', '创新'];
+                const selectedTags = tags.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+                let html = '<h5 class="font-medium mb-3">推荐标签：</h5><div class="flex flex-wrap gap-2">';
+                selectedTags.forEach(tag => {
+                    html += `<span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-blue-200">#${tag}</span>`;
+                });
+                html += '</div>';
+
+                tagsDiv.innerHTML = html;
+            }, 1000);
+        }
+
+        // 模板选择
+        function selectTemplate(type) {
+            const previewDiv = document.getElementById('templatePreview');
+            const templates = {
+                diary: {
+                    title: '日记模板',
+                    content: `📅 日期：${new Date().toLocaleDateString()}
+🌤️ 天气：晴朗
+😊 心情：开心
+
+今天发生的事：
+-
+
+感悟和思考：
+-
+
+明天的计划：
+- `
+                },
+                task: {
+                    title: '任务模板',
+                    content: `🎯 目标：
+📋 任务列表：
+□ 任务1
+□ 任务2
+□ 任务3
+
+⏰ 截止时间：
+📊 优先级：高/中/低
+✅ 完成状态：进行中`
+                },
+                contact: {
+                    title: '人脉模板',
+                    content: `👤 姓名：
+🏢 公司/职位：
+📱 联系方式：
+📍 认识地点：
+🤝 关系类型：
+
+💬 最近互动：
+📝 备注：`
+                },
+                note: {
+                    title: '笔记模板',
+                    content: `📚 主题：
+🔖 来源：
+📅 日期：
+
+📝 要点：
+1.
+2.
+3.
+
+💡 思考：
+🔗 相关链接：`
+                }
+            };
+
+            const template = templates[type];
+            previewDiv.innerHTML = `
+                <h5 class="font-medium mb-2">${template.title}</h5>
+                <pre class="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-3 rounded">${template.content}</pre>
+            `;
+        }
+
+        // 字数统计
+        function updateWordCount() {
+            const text = document.getElementById('wordCountText').value;
+            const charCount = text.length;
+            const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const lineCount = text.split('\n').length;
+            const readTime = Math.ceil(wordCount / 200); // 假设每分钟200字
+
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('lineCount').textContent = lineCount;
+            document.getElementById('readTime').textContent = readTime;
+        }
+
+        // 心情选择
+        function selectMood(emoji, mood) {
+            const resultDiv = document.getElementById('moodResult');
+            resultDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="text-4xl mb-2">${emoji}</div>
+                    <div class="text-lg font-medium">今日心情：${mood}</div>
+                    <div class="text-sm text-gray-600 mt-2">记录时间：${new Date().toLocaleString()}</div>
+                </div>
+            `;
+
+            // 高亮选中的心情
+            document.querySelectorAll('.mood-item').forEach(item => {
+                item.classList.remove('bg-blue-100');
+            });
+            event.target.closest('.mood-item').classList.add('bg-blue-100');
+        }
+
+        // 习惯打卡切换
+        function toggleHabit(element) {
+            const icon = element.querySelector('i');
+            if (icon.classList.contains('fa-circle')) {
+                icon.className = 'fas fa-check text-green-500';
+            } else if (icon.classList.contains('fa-check')) {
+                icon.className = 'fas fa-times text-red-500';
+            } else {
+                icon.className = 'fas fa-circle text-gray-300';
+            }
+        }
+
+        // 搜索功能
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (!query.trim()) {
+                resultsDiv.innerHTML = '<p class="text-gray-500 italic">输入关键词开始搜索...</p>';
+                return;
+            }
+
+            // 模拟搜索结果
+            setTimeout(() => {
+                const results = [
+                    { title: '工作总结', content: '今天完成了重要的项目提案...', date: '2024-01-15', type: '日记' },
+                    { title: '学习计划', content: '制定了新的学习目标...', date: '2024-01-14', type: '任务' },
+                    { title: '朋友聚会', content: '和老朋友聚餐，聊了很多...', date: '2024-01-13', type: '人脉' }
+                ];
+
+                let html = '';
+                results.forEach(result => {
+                    html += `
+                        <div class="bg-white p-4 rounded-lg border hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="font-medium">${result.title}</h5>
+                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${result.type}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">${result.content}</p>
+                            <div class="text-xs text-gray-500">${result.date}</div>
+                        </div>
+                    `;
+                });
+
+                resultsDiv.innerHTML = html;
+            }, 300);
+        }
+
+        // 数据导出
+        function exportData(format) {
+            const progressDiv = document.getElementById('exportProgress');
+            const progressBar = document.getElementById('exportProgressBar');
+
+            progressDiv.classList.remove('hidden');
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressDiv.classList.add('hidden');
+                        alert(`${format.toUpperCase()}文件导出完成！`);
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        // 手动备份
+        function manualBackup() {
+            const button = event.target;
+            const originalText = button.innerHTML;
+
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>备份中...';
+            button.disabled = true;
+
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>备份完成';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 3000);
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 记录统计图表
+            const recordsCtx = document.getElementById('recordsChart').getContext('2d');
+            new Chart(recordsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '记录数量',
+                        data: [12, 19, 15, 25, 22, 30],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 情感分布图表
+            const emotionCtx = document.getElementById('emotionChart').getContext('2d');
+            new Chart(emotionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['积极', '中性', '消极'],
+                    datasets: [{
+                        data: [70, 25, 5],
+                        backgroundColor: ['#10B981', '#6B7280', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化心情趋势图表
+        function initMoodChart() {
+            const moodCtx = document.getElementById('moodTrendChart').getContext('2d');
+            new Chart(moodCtx, {
+                type: 'line',
+                data: {
+                    labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    datasets: [{
+                        label: '心情指数',
+                        data: [7, 8, 6, 9, 8, 9, 8],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <!-- 开关样式 -->
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</body>
+</html>

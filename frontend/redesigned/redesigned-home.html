@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - 首页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 52px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 18px;
+        }
+        
+        .ai-assistant {
+            position: fixed;
+            bottom: 100px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+        
+        .ai-assistant:hover {
+            transform: scale(1.1);
+        }
+        
+        .ai-assistant.active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .quick-action {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .quick-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .ai-suggestions {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .suggestion-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .suggestion-item:hover {
+            background: #f8fafc;
+            border-color: #0ea5e9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .recent-content {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .content-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .content-item:last-child {
+            border-bottom: none;
+        }
+        
+        .content-item:hover {
+            background: #f8f9fa;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        
+        .content-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .ai-chat-panel {
+            position: fixed;
+            bottom: 170px;
+            right: 16px;
+            width: 280px;
+            height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+        }
+        
+        .ai-chat-panel.show {
+            display: flex;
+        }
+        
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        
+        .chat-input {
+            padding: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .ai-message {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 全局搜索栏 -->
+    <div class="search-bar fade-in">
+        <input type="text" id="globalSearch" class="search-input" placeholder="搜索日记、笔记、联系人..." 
+               oninput="handleGlobalSearch()" onkeypress="handleSearchKeyPress(event)">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+    
+    <!-- AI智能建议 -->
+    <div class="ai-suggestions fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-magic text-blue-500 mr-2"></i>
+                AI智能建议
+            </h3>
+            <button class="text-blue-500 text-sm" onclick="refreshSuggestions()">
+                <i class="fas fa-refresh mr-1"></i>刷新
+            </button>
+        </div>
+        
+        <div class="suggestion-item" onclick="applySuggestion('写日记')">
+            <div class="text-sm font-medium text-gray-800">📝 今天写点什么？</div>
+            <div class="text-xs text-gray-600 mt-1">基于你的心情和最近活动，AI建议记录今天的感悟</div>
+        </div>
+        
+        <div class="suggestion-item" onclick="applySuggestion('联系朋友')">
+            <div class="text-sm font-medium text-gray-800">👥 该联系老朋友了</div>
+            <div class="text-xs text-gray-600 mt-1">你已经3周没有联系李雷了，要不要发个消息？</div>
+        </div>
+    </div>
+    
+    <!-- 快速操作 -->
+    <div class="quick-actions fade-in">
+        <div class="quick-action" onclick="quickAction('diary')">
+            <div class="quick-icon bg-gradient-to-r from-orange-500 to-red-500">
+                <i class="fas fa-pen"></i>
+            </div>
+            <div class="text-xs font-medium text-gray-800">写日记</div>
+        </div>
+        
+        <div class="quick-action" onclick="quickAction('task')">
+            <div class="quick-icon bg-gradient-to-r from-green-500 to-teal-500">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="text-xs font-medium text-gray-800">新任务</div>
+        </div>
+        
+        <div class="quick-action" onclick="quickAction('note')">
+            <div class="quick-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                <i class="fas fa-sticky-note"></i>
+            </div>
+            <div class="text-xs font-medium text-gray-800">记笔记</div>
+        </div>
+        
+        <div class="quick-action" onclick="quickAction('contact')">
+            <div class="quick-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="text-xs font-medium text-gray-800">加联系人</div>
+        </div>
+    </div>
+    
+    <!-- 今日统计 -->
+    <div class="stats-grid slide-in">
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-blue-600">3</div>
+            <div class="text-xs text-gray-500">今日记录</div>
+        </div>
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-green-600">7</div>
+            <div class="text-xs text-gray-500">完成任务</div>
+        </div>
+        <div class="stat-card">
+            <div class="text-2xl font-bold text-purple-600">12</div>
+            <div class="text-xs text-gray-500">AI对话</div>
+        </div>
+    </div>
+    
+    <!-- 最近内容 -->
+    <div class="recent-content slide-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">最近内容</h3>
+            <button class="text-blue-500 text-sm">查看全部</button>
+        </div>
+        
+        <div class="content-item" onclick="openContent('diary', 1)">
+            <div class="content-icon bg-gradient-to-r from-orange-500 to-red-500">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">春日漫步的思考</div>
+                <div class="text-xs text-gray-500">今天 20:30 • 日记</div>
+            </div>
+            <div class="text-xs text-gray-400">😊</div>
+        </div>
+        
+        <div class="content-item" onclick="openContent('task', 2)">
+            <div class="content-icon bg-gradient-to-r from-green-500 to-teal-500">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">完成项目文档</div>
+                <div class="text-xs text-gray-500">今天 18:00 • 任务</div>
+            </div>
+            <div class="text-xs text-green-600">✓</div>
+        </div>
+        
+        <div class="content-item" onclick="openContent('contact', 3)">
+            <div class="content-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-gray-800 text-sm">与张三的会议</div>
+                <div class="text-xs text-gray-500">昨天 14:30 • 人脉</div>
+            </div>
+            <div class="text-xs text-gray-400">💼</div>
+        </div>
+    </div>
+    
+    <!-- AI助手浮动按钮 -->
+    <div class="ai-assistant" id="aiAssistant" onclick="toggleAIChat()">
+        <i class="fas fa-robot"></i>
+    </div>
+    
+    <!-- AI聊天面板 -->
+    <div class="ai-chat-panel" id="aiChatPanel">
+        <div class="chat-header">
+            <div class="flex items-center flex-1">
+                <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div>
+                    <div class="font-medium text-gray-800 text-sm">AI助手</div>
+                    <div class="text-xs text-green-500">在线</div>
+                </div>
+            </div>
+            <button onclick="toggleAIChat()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="ai-message">
+                <div class="text-sm">👋 你好！我是你的AI助手，可以帮你：</div>
+                <div class="text-xs mt-2 space-y-1">
+                    <div>• 智能搜索和内容推荐</div>
+                    <div>• 写作灵感和内容优化</div>
+                    <div>• 数据分析和洞察</div>
+                    <div>• 日程提醒和任务管理</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <div class="flex items-center">
+                <input type="text" placeholder="输入消息..." class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                <button class="ml-2 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center">
+                    <i class="fas fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let aiChatOpen = false;
+        
+        // 全局搜索处理
+        function handleGlobalSearch() {
+            const query = document.getElementById('globalSearch').value;
+            console.log('搜索:', query);
+            // 这里可以添加实时搜索逻辑
+        }
+        
+        function handleSearchKeyPress(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query) {
+                    alert(`搜索: ${query}`);
+                }
+            }
+        }
+        
+        // AI建议相关
+        function refreshSuggestions() {
+            alert('刷新AI建议');
+        }
+        
+        function applySuggestion(type) {
+            alert(`应用建议: ${type}`);
+        }
+        
+        // 快速操作
+        function quickAction(type) {
+            const actions = {
+                diary: '创建新日记',
+                task: '创建新任务',
+                note: '创建新笔记',
+                contact: '添加新联系人'
+            };
+            alert(actions[type]);
+        }
+        
+        // 打开内容
+        function openContent(type, id) {
+            alert(`打开${type}内容，ID: ${id}`);
+        }
+        
+        // AI聊天切换
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const assistant = document.getElementById('aiAssistant');
+            
+            aiChatOpen = !aiChatOpen;
+            
+            if (aiChatOpen) {
+                panel.classList.add('show');
+                assistant.classList.add('active');
+            } else {
+                panel.classList.remove('show');
+                assistant.classList.remove('active');
+            }
+        }
+        
+        // 点击外部关闭AI聊天面板
+        document.addEventListener('click', function(event) {
+            const panel = document.getElementById('aiChatPanel');
+            const assistant = document.getElementById('aiAssistant');
+
+            if (aiChatOpen && !panel.contains(event.target) && !assistant.contains(event.target)) {
+                toggleAIChat();
+            }
+        });
+
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+
+        // 实时更新时间和问候语
+        function updateGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = '';
+
+            if (hour < 6) {
+                greeting = '深夜好';
+            } else if (hour < 12) {
+                greeting = '早上好';
+            } else if (hour < 18) {
+                greeting = '下午好';
+            } else {
+                greeting = '晚上好';
+            }
+
+            // 更新AI建议中的问候语
+            const suggestionText = document.querySelector('.suggestion-item .text-sm');
+            if (suggestionText && suggestionText.textContent.includes('今天写点什么')) {
+                suggestionText.textContent = `📝 ${greeting}，今天写点什么？`;
+            }
+        }
+
+        // 模拟实时数据更新
+        function updateStats() {
+            const stats = document.querySelectorAll('.stat-card .text-2xl');
+            stats.forEach((stat, index) => {
+                const currentValue = parseInt(stat.textContent);
+                // 随机小幅度变化
+                if (Math.random() > 0.7) {
+                    const change = Math.random() > 0.5 ? 1 : -1;
+                    const newValue = Math.max(0, currentValue + change);
+                    stat.textContent = newValue;
+
+                    // 添加变化动画
+                    stat.style.transform = 'scale(1.1)';
+                    stat.style.color = change > 0 ? '#10b981' : '#ef4444';
+                    setTimeout(() => {
+                        stat.style.transform = 'scale(1)';
+                        stat.style.color = '';
+                    }, 300);
+                }
+            });
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGreeting();
+
+            // 每30秒更新一次问候语
+            setInterval(updateGreeting, 30000);
+
+            // 每5分钟模拟数据更新
+            setInterval(updateStats, 300000);
+        });
+    </script>
+</body>
+</html>

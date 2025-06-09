@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .settings-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .settings-item {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .settings-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .settings-text {
+            flex: 1;
+        }
+        
+        .settings-title {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        
+        .settings-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .settings-value {
+            color: #6b7280;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #34d399;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.3);
+            margin: 0 auto 16px;
+            object-fit: cover;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .ai-model-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ai-model-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .ai-model-card:hover {
+            border-color: #9ca3af;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 个人资料头部 -->
+    <div class="settings-section fade-in">
+        <div class="profile-header">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+                 class="profile-avatar" alt="用户头像">
+            <h2 class="text-xl font-bold">小明</h2>
+            <p class="text-white/80 text-sm">xiaoming@example.com</p>
+            <button class="mt-3 px-4 py-2 bg-white/20 rounded-lg text-sm font-medium">
+                编辑资料
+            </button>
+        </div>
+    </div>
+
+    <!-- 数据概览 -->
+    <div class="settings-section fade-in">
+        <div class="settings-item" onclick="openAnalyticsPage()">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-gradient-to-r from-blue-500 to-purple-600">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">数据分析</div>
+                    <div class="settings-subtitle">查看详细的使用统计和洞察</div>
+                </div>
+            </div>
+            <div class="settings-value">查看</div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+
+        <div class="px-4 pb-4">
+            <div class="grid grid-cols-3 gap-3">
+                <div class="text-center p-3 bg-blue-50 rounded-lg">
+                    <div class="text-lg font-bold text-blue-600">156</div>
+                    <div class="text-xs text-gray-500">总记录</div>
+                </div>
+                <div class="text-center p-3 bg-green-50 rounded-lg">
+                    <div class="text-lg font-bold text-green-600">23</div>
+                    <div class="text-xs text-gray-500">本月</div>
+                </div>
+                <div class="text-center p-3 bg-purple-50 rounded-lg">
+                    <div class="text-lg font-bold text-purple-600">7</div>
+                    <div class="text-xs text-gray-500">连续天数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI设置 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item" onclick="showAIModelSelector()">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-purple-500">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">AI模型选择</div>
+                    <div class="settings-subtitle">当前使用：GPT-4</div>
+                </div>
+            </div>
+            <div class="settings-value">配置</div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-blue-500">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">API密钥管理</div>
+                    <div class="settings-subtitle">管理第三方AI服务密钥</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-green-500">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">AI行为调节</div>
+                    <div class="settings-subtitle">创意程度、回复风格等</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 外观设置 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-indigo-500">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">主题外观</div>
+                    <div class="settings-subtitle">浅色模式</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-pink-500">
+                    <i class="fas fa-font"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">字体大小</div>
+                    <div class="settings-subtitle">标准</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 通知设置 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-orange-500">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">每日写作提醒</div>
+                    <div class="settings-subtitle">每天 20:00</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-red-500">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">人脉提醒</div>
+                    <div class="settings-subtitle">生日、纪念日等重要提醒</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-yellow-500">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">任务提醒</div>
+                    <div class="settings-subtitle">清单截止日期提醒</div>
+                </div>
+            </div>
+            <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+        </div>
+    </div>
+    
+    <!-- 数据管理 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-blue-600">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">导出数据</div>
+                    <div class="settings-subtitle">PDF、TXT、Markdown格式</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-green-600">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">导入数据</div>
+                    <div class="settings-subtitle">从其他应用导入</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-purple-600">
+                    <i class="fas fa-cloud"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">云同步</div>
+                    <div class="settings-subtitle">最后同步：2分钟前</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+    </div>
+    
+    <!-- 安全与隐私 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-gray-600">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">应用锁</div>
+                    <div class="settings-subtitle">面容ID/指纹解锁</div>
+                </div>
+            </div>
+            <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-teal-600">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">隐私政策</div>
+                    <div class="settings-subtitle">了解数据使用方式</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-cyan-600">
+                    <i class="fas fa-user-secret"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">AI数据使用</div>
+                    <div class="settings-subtitle">控制AI分析权限</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+    </div>
+    
+    <!-- 关于 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-gray-500">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">关于应用</div>
+                    <div class="settings-subtitle">版本 1.0.0</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-amber-500">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">评价应用</div>
+                    <div class="settings-subtitle">在App Store中评价</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-emerald-500">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">意见反馈</div>
+                    <div class="settings-subtitle">帮助我们改进</div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 账户操作 -->
+    <div class="settings-section slide-in">
+        <div class="settings-item">
+            <div class="settings-item-left">
+                <div class="settings-icon bg-red-500">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="settings-text">
+                    <div class="settings-title">退出登录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI模型选择弹窗（隐藏） -->
+    <div id="aiModelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4" style="z-index: 1000;">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm">
+            <h3 class="text-lg font-semibold mb-4">选择AI模型</h3>
+            
+            <div class="ai-model-card selected">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="font-medium">GPT-4</div>
+                    <div class="text-sm text-green-600">推荐</div>
+                </div>
+                <div class="text-sm text-gray-600">最先进的语言模型，理解能力强</div>
+            </div>
+            
+            <div class="ai-model-card">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="font-medium">GPT-3.5 Turbo</div>
+                    <div class="text-sm text-blue-600">快速</div>
+                </div>
+                <div class="text-sm text-gray-600">响应速度快，成本较低</div>
+            </div>
+            
+            <div class="ai-model-card">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="font-medium">Claude Sonnet</div>
+                    <div class="text-sm text-purple-600">平衡</div>
+                </div>
+                <div class="text-sm text-gray-600">性能与成本的良好平衡</div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button class="flex-1 py-2 px-4 bg-gray-200 rounded-lg" onclick="hideAIModelSelector()">
+                    取消
+                </button>
+                <button class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg" onclick="saveAIModel()">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换开关
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        // 打开数据分析页面
+        function openAnalyticsPage() {
+            // 在实际应用中，这里会进行页面跳转
+            alert('跳转到数据分析页面');
+            console.log('导航到数据分析页面');
+        }
+        
+        // 显示AI模型选择器
+        function showAIModelSelector() {
+            document.getElementById('aiModelModal').classList.remove('hidden');
+            document.getElementById('aiModelModal').classList.add('flex');
+        }
+        
+        // 隐藏AI模型选择器
+        function hideAIModelSelector() {
+            document.getElementById('aiModelModal').classList.add('hidden');
+            document.getElementById('aiModelModal').classList.remove('flex');
+        }
+        
+        // 保存AI模型选择
+        function saveAIModel() {
+            const selectedCard = document.querySelector('.ai-model-card.selected');
+            const modelName = selectedCard.querySelector('.font-medium').textContent;
+            
+            // 更新设置页面显示
+            const aiSettingSubtitle = document.querySelector('.settings-item .settings-subtitle');
+            aiSettingSubtitle.textContent = `当前使用：${modelName}`;
+            
+            hideAIModelSelector();
+            
+            // 显示保存成功提示
+            alert(`已切换到 ${modelName} 模型`);
+        }
+        
+        // AI模型卡片选择
+        document.querySelectorAll('.ai-model-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.ai-model-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+        
+        // 点击模态框背景关闭
+        document.getElementById('aiModelModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAIModelSelector();
+            }
+        });
+    </script>
+</body>
+</html>

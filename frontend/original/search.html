@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 52px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 18px;
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .filter-chip {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .filter-chip.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .search-result {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-result:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .result-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .type-diary { background: #fff3e0; color: #f57c00; }
+        .type-task { background: #e8f5e8; color: #2e7d32; }
+        .type-contact { background: #f3e5f5; color: #7b1fa2; }
+        .type-note { background: #e3f2fd; color: #1976d2; }
+        .type-goal { background: #fff8e1; color: #f57f17; }
+        .type-travel { background: #e0f2f1; color: #00695c; }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .quick-search {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .quick-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .quick-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .quick-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 20px;
+        }
+        
+        .recent-searches {
+            margin-bottom: 24px;
+        }
+        
+        .recent-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recent-item:hover {
+            background: #f8f9fa;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 搜索栏 -->
+    <div class="search-bar fade-in">
+        <input type="text" id="searchInput" class="search-input" placeholder="搜索日记、笔记、任务、联系人..." 
+               oninput="handleSearch()" onkeypress="handleKeyPress(event)">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+    
+    <!-- 筛选标签 -->
+    <div class="filter-chips fade-in">
+        <button class="filter-chip active" onclick="filterResults('all')">全部</button>
+        <button class="filter-chip" onclick="filterResults('diary')">
+            <i class="fas fa-book mr-1"></i>日记
+        </button>
+        <button class="filter-chip" onclick="filterResults('task')">
+            <i class="fas fa-tasks mr-1"></i>任务
+        </button>
+        <button class="filter-chip" onclick="filterResults('contact')">
+            <i class="fas fa-users mr-1"></i>人脉
+        </button>
+        <button class="filter-chip" onclick="filterResults('note')">
+            <i class="fas fa-sticky-note mr-1"></i>笔记
+        </button>
+        <button class="filter-chip" onclick="filterResults('goal')">
+            <i class="fas fa-target mr-1"></i>目标
+        </button>
+        <button class="filter-chip" onclick="filterResults('travel')">
+            <i class="fas fa-plane mr-1"></i>旅行
+        </button>
+    </div>
+    
+    <!-- 默认状态：快速搜索 -->
+    <div id="defaultState">
+        <!-- 快速搜索选项 -->
+        <div class="quick-search fade-in">
+            <div class="quick-item" onclick="quickSearch('今天')">
+                <div class="quick-icon bg-blue-100 text-blue-600">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="font-medium text-gray-800">今天</div>
+                <div class="text-xs text-gray-500">今日记录</div>
+            </div>
+            <div class="quick-item" onclick="quickSearch('本周')">
+                <div class="quick-icon bg-green-100 text-green-600">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+                <div class="font-medium text-gray-800">本周</div>
+                <div class="text-xs text-gray-500">一周回顾</div>
+            </div>
+            <div class="quick-item" onclick="quickSearch('重要')">
+                <div class="quick-icon bg-orange-100 text-orange-600">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="font-medium text-gray-800">重要</div>
+                <div class="text-xs text-gray-500">重要内容</div>
+            </div>
+            <div class="quick-item" onclick="quickSearch('收藏')">
+                <div class="quick-icon bg-red-100 text-red-600">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="font-medium text-gray-800">收藏</div>
+                <div class="text-xs text-gray-500">收藏内容</div>
+            </div>
+        </div>
+        
+        <!-- 最近搜索 -->
+        <div class="card p-4 recent-searches fade-in">
+            <h3 class="font-semibold text-gray-800 mb-3">最近搜索</h3>
+            <div class="recent-item" onclick="quickSearch('春天')">
+                <i class="fas fa-clock text-gray-400 mr-3"></i>
+                <span class="flex-1 text-gray-700">春天</span>
+                <i class="fas fa-arrow-up-right text-gray-400"></i>
+            </div>
+            <div class="recent-item" onclick="quickSearch('工作计划')">
+                <i class="fas fa-clock text-gray-400 mr-3"></i>
+                <span class="flex-1 text-gray-700">工作计划</span>
+                <i class="fas fa-arrow-up-right text-gray-400"></i>
+            </div>
+            <div class="recent-item" onclick="quickSearch('李雷')">
+                <i class="fas fa-clock text-gray-400 mr-3"></i>
+                <span class="flex-1 text-gray-700">李雷</span>
+                <i class="fas fa-arrow-up-right text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 热门标签 -->
+        <div class="card p-4 fade-in">
+            <h3 class="font-semibold text-gray-800 mb-3">热门标签</h3>
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-blue-100 text-blue-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('生活感悟')">生活感悟</span>
+                <span class="bg-green-100 text-green-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('工作')">工作</span>
+                <span class="bg-purple-100 text-purple-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('学习')">学习</span>
+                <span class="bg-orange-100 text-orange-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('心情')">心情</span>
+                <span class="bg-pink-100 text-pink-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('旅行')">旅行</span>
+                <span class="bg-indigo-100 text-indigo-600 text-sm px-3 py-1 rounded-full cursor-pointer" onclick="quickSearch('健康')">健康</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 搜索结果 -->
+    <div id="searchResults" style="display: none;">
+        <!-- 搜索结果将通过JavaScript动态生成 -->
+    </div>
+    
+    <!-- 空状态 -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">没有找到相关内容</h3>
+        <p class="text-gray-600 mb-4">尝试使用不同的关键词或筛选条件</p>
+        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg" onclick="clearSearch()">
+            清除搜索
+        </button>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        let searchTimeout;
+        
+        // 模拟搜索数据
+        const searchData = [
+            {
+                id: 1,
+                type: 'diary',
+                title: '春日漫步的思考',
+                content: '今天在公园里走了很久，看到樱花开始绽放，心情特别好。春天总是能给人带来希望和活力...',
+                date: '2024-03-15',
+                tags: ['生活感悟', '自然', '心情']
+            },
+            {
+                id: 2,
+                type: 'task',
+                title: '项目进度回顾',
+                content: '本周完成了数据库设计和API接口开发，团队协作很顺利...',
+                date: '2024-03-14',
+                tags: ['工作', '项目']
+            },
+            {
+                id: 3,
+                type: 'contact',
+                title: '与李雷的工作讨论',
+                content: '和李雷讨论了新项目的技术方案，他提出了一些很有价值的建议...',
+                date: '2024-03-13',
+                tags: ['工作', '讨论']
+            },
+            {
+                id: 4,
+                type: 'note',
+                title: 'React Hooks 学习笔记',
+                content: '今天学习了React Hooks的高级用法，特别是useCallback和useMemo的优化技巧...',
+                date: '2024-03-12',
+                tags: ['技术', '前端', '学习']
+            }
+        ];
+        
+        // 处理搜索
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (query.length > 0) {
+                    performSearch(query);
+                } else {
+                    showDefaultState();
+                }
+            }, 300);
+        }
+        
+        // 执行搜索
+        function performSearch(query) {
+            const results = searchData.filter(item => {
+                const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase()) ||
+                                   item.content.toLowerCase().includes(query.toLowerCase()) ||
+                                   item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
+                
+                const matchesFilter = currentFilter === 'all' || item.type === currentFilter;
+                
+                return matchesQuery && matchesFilter;
+            });
+            
+            displaySearchResults(results, query);
+        }
+        
+        // 显示搜索结果
+        function displaySearchResults(results, query) {
+            const defaultState = document.getElementById('defaultState');
+            const searchResults = document.getElementById('searchResults');
+            const emptyState = document.getElementById('emptyState');
+            
+            defaultState.style.display = 'none';
+            emptyState.style.display = 'none';
+            
+            if (results.length === 0) {
+                searchResults.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            searchResults.style.display = 'block';
+            searchResults.innerHTML = results.map(item => createResultHTML(item, query)).join('');
+        }
+        
+        // 创建搜索结果HTML
+        function createResultHTML(item, query) {
+            const typeConfig = {
+                diary: { icon: 'fas fa-book', class: 'type-diary', name: '日记' },
+                task: { icon: 'fas fa-tasks', class: 'type-task', name: '任务' },
+                contact: { icon: 'fas fa-users', class: 'type-contact', name: '人脉' },
+                note: { icon: 'fas fa-sticky-note', class: 'type-note', name: '笔记' },
+                goal: { icon: 'fas fa-target', class: 'type-goal', name: '目标' },
+                travel: { icon: 'fas fa-plane', class: 'type-travel', name: '旅行' }
+            };
+            
+            const config = typeConfig[item.type];
+            const highlightedTitle = highlightText(item.title, query);
+            const highlightedContent = highlightText(item.content.substring(0, 100) + '...', query);
+            
+            return `
+                <div class="search-result slide-in" onclick="openItem(${item.id})">
+                    <div class="result-type ${config.class}">
+                        <i class="${config.icon}"></i>
+                        ${config.name}
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-2">${highlightedTitle}</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-3">${highlightedContent}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex gap-2">
+                            ${item.tags.map(tag => `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                        </div>
+                        <span class="text-xs text-gray-500">${item.date}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 高亮文本
+        function highlightText(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+        
+        // 筛选结果
+        function filterResults(type) {
+            currentFilter = type;
+            
+            // 更新筛选按钮状态
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 重新搜索
+            const query = document.getElementById('searchInput').value.trim();
+            if (query.length > 0) {
+                performSearch(query);
+            }
+        }
+        
+        // 快速搜索
+        function quickSearch(query) {
+            document.getElementById('searchInput').value = query;
+            performSearch(query);
+        }
+        
+        // 显示默认状态
+        function showDefaultState() {
+            document.getElementById('defaultState').style.display = 'block';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        
+        // 清除搜索
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            showDefaultState();
+        }
+        
+        // 处理键盘事件
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query.length > 0) {
+                    performSearch(query);
+                }
+            }
+        }
+        
+        // 打开项目详情
+        function openItem(id) {
+            console.log('打开项目:', id);
+            // 这里可以添加跳转到详情页的逻辑
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+    </script>
+</body>
+</html>

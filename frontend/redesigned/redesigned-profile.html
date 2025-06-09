@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日记 - 我的</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #F2F2F7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .menu-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+            color: white;
+        }
+        
+        .menu-content {
+            flex: 1;
+        }
+        
+        .menu-title {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        
+        .menu-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .menu-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-right: 8px;
+        }
+        
+        .ai-assistant-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .achievement-item {
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .achievement-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .achievement-item.unlocked {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .achievement-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .achievement-title {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .switch.active {
+            background: #3b82f6;
+        }
+        
+        .switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .switch.active::before {
+            transform: translateX(20px);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .version-info {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- 个人资料头部 -->
+    <div class="profile-header fade-in">
+        <div class="avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <h1 class="text-xl font-bold mb-1">张小明</h1>
+        <p class="text-white/80 text-sm mb-4">AI日记陪伴你 156 天</p>
+        
+        <div class="flex justify-center gap-4 text-sm">
+            <div class="text-center">
+                <div class="font-bold">156</div>
+                <div class="text-white/70 text-xs">总记录</div>
+            </div>
+            <div class="text-center">
+                <div class="font-bold">23</div>
+                <div class="text-white/70 text-xs">连续天数</div>
+            </div>
+            <div class="text-center">
+                <div class="font-bold">4.2</div>
+                <div class="text-white/70 text-xs">平均心情</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI助手状态 -->
+    <div class="ai-assistant-card fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-robot text-blue-500 mr-2"></i>
+                AI助手状态
+            </h3>
+            <span class="premium-badge">PRO</span>
+        </div>
+        
+        <div class="text-sm text-gray-700 mb-3">
+            🎯 今日AI建议: 根据你的写作习惯，建议在晚上8点开始记录今天的感悟
+        </div>
+        
+        <div class="flex justify-between items-center">
+            <div class="text-xs text-gray-600">
+                本月AI对话: 127次 | 智能分析: 45次
+            </div>
+            <button class="text-blue-500 text-sm font-medium" onclick="openAISettings()">
+                配置AI
+            </button>
+        </div>
+    </div>
+    
+    <!-- 成就系统 -->
+    <div class="achievement-grid slide-in">
+        <div class="achievement-item unlocked" onclick="showAchievement('连续记录')">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-title">连续记录</div>
+        </div>
+        <div class="achievement-item unlocked" onclick="showAchievement('情感大师')">
+            <div class="achievement-icon">😊</div>
+            <div class="achievement-title">情感大师</div>
+        </div>
+        <div class="achievement-item" onclick="showAchievement('社交达人')">
+            <div class="achievement-icon">👥</div>
+            <div class="achievement-title">社交达人</div>
+        </div>
+        <div class="achievement-item" onclick="showAchievement('目标达成')">
+            <div class="achievement-icon">🎯</div>
+            <div class="achievement-title">目标达成</div>
+        </div>
+    </div>
+    
+    <!-- 数据与洞察 -->
+    <div class="menu-section slide-in">
+        <div class="menu-item" onclick="openInsights()">
+            <div class="menu-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">数据洞察</div>
+                <div class="menu-subtitle">查看详细的数据分析和AI洞察</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openDataExport()">
+            <div class="menu-icon bg-gradient-to-r from-green-500 to-teal-500">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">数据导出</div>
+                <div class="menu-subtitle">导出你的记录数据和分析报告</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- AI设置 -->
+    <div class="menu-section slide-in">
+        <div class="menu-item" onclick="openAIPersonality()">
+            <div class="menu-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">AI个性化</div>
+                <div class="menu-subtitle">定制AI助手的性格和回应风格</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-icon bg-gradient-to-r from-purple-500 to-pink-500">
+                <i class="fas fa-magic"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">智能提醒</div>
+                <div class="menu-subtitle">AI会在合适的时间提醒你记录</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-icon bg-gradient-to-r from-orange-500 to-red-500">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">情感分析</div>
+                <div class="menu-subtitle">自动分析记录中的情感倾向</div>
+            </div>
+            <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+    </div>
+    
+    <!-- 应用设置 -->
+    <div class="menu-section slide-in">
+        <div class="menu-item" onclick="openNotificationSettings()">
+            <div class="menu-icon bg-gradient-to-r from-yellow-500 to-orange-500">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">通知设置</div>
+                <div class="menu-subtitle">管理推送通知和提醒</div>
+            </div>
+            <span class="menu-badge">3</span>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openPrivacySettings()">
+            <div class="menu-icon bg-gradient-to-r from-gray-500 to-gray-600">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">隐私与安全</div>
+                <div class="menu-subtitle">数据加密、备份和隐私设置</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openThemeSettings()">
+            <div class="menu-icon bg-gradient-to-r from-indigo-500 to-purple-500">
+                <i class="fas fa-palette"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">主题外观</div>
+                <div class="menu-subtitle">个性化界面主题和字体</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 社交功能 -->
+    <div class="menu-section slide-in">
+        <div class="menu-item" onclick="openSocialFeatures()">
+            <div class="menu-icon bg-gradient-to-r from-pink-500 to-rose-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">社交功能</div>
+                <div class="menu-subtitle">分享记录、关注朋友动态</div>
+            </div>
+            <span class="premium-badge">NEW</span>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openCommunity()">
+            <div class="menu-icon bg-gradient-to-r from-teal-500 to-cyan-500">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">社区交流</div>
+                <div class="menu-subtitle">加入话题讨论，分享生活感悟</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 帮助与支持 -->
+    <div class="menu-section slide-in">
+        <div class="menu-item" onclick="openHelp()">
+            <div class="menu-icon bg-gradient-to-r from-blue-500 to-cyan-500">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">帮助中心</div>
+                <div class="menu-subtitle">使用指南、常见问题</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openFeedback()">
+            <div class="menu-icon bg-gradient-to-r from-green-500 to-emerald-500">
+                <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">意见反馈</div>
+                <div class="menu-subtitle">告诉我们你的想法和建议</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+        
+        <div class="menu-item" onclick="openAbout()">
+            <div class="menu-icon bg-gradient-to-r from-gray-500 to-slate-500">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">关于应用</div>
+                <div class="menu-subtitle">版本信息、开发团队</div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 版本信息 -->
+    <div class="version-info slide-in">
+        <div>AI日记 v2.1.0</div>
+        <div class="mt-1">让AI陪伴你的每一天 ❤️</div>
+    </div>
+    
+    <script>
+        // 切换开关
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+        
+        // 显示成就详情
+        function showAchievement(name) {
+            alert(`查看成就: ${name}`);
+        }
+        
+        // 打开各种设置页面
+        function openInsights() {
+            alert('打开数据洞察页面');
+        }
+        
+        function openDataExport() {
+            alert('打开数据导出页面');
+        }
+        
+        function openAISettings() {
+            alert('打开AI设置页面');
+        }
+        
+        function openAIPersonality() {
+            alert('打开AI个性化设置');
+        }
+        
+        function openNotificationSettings() {
+            alert('打开通知设置');
+        }
+        
+        function openPrivacySettings() {
+            alert('打开隐私设置');
+        }
+        
+        function openThemeSettings() {
+            alert('打开主题设置');
+        }
+        
+        function openSocialFeatures() {
+            alert('打开社交功能');
+        }
+        
+        function openCommunity() {
+            alert('打开社区交流');
+        }
+        
+        function openHelp() {
+            alert('打开帮助中心');
+        }
+        
+        function openFeedback() {
+            alert('打开意见反馈');
+        }
+        
+        function openAbout() {
+            alert('打开关于页面');
+        }
+        
+        // 添加动画延迟
+        document.querySelectorAll('.slide-in').forEach((element, index) => {
+            element.style.animationDelay = (index * 0.1) + 's';
+        });
+
+        // 头部统计数字动画
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                animateProfileStats();
+            }, 800);
+        });
+
+        function animateProfileStats() {
+            const stats = [
+                { element: document.querySelector('.profile-header .flex .text-center:nth-child(1) .font-bold'), target: 156 },
+                { element: document.querySelector('.profile-header .flex .text-center:nth-child(2) .font-bold'), target: 23 },
+                { element: document.querySelector('.profile-header .flex .text-center:nth-child(3) .font-bold'), target: 4.2 }
+            ];
+
+            stats.forEach((stat, index) => {
+                if (stat.element) {
+                    let current = 0;
+                    const increment = stat.target / 20;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= stat.target) {
+                            current = stat.target;
+                            clearInterval(timer);
+                        }
+
+                        if (stat.target === 4.2) {
+                            stat.element.textContent = current.toFixed(1);
+                        } else {
+                            stat.element.textContent = Math.round(current);
+                        }
+                    }, 50);
+                }
+            });
+        }
+
+        // 成就项点击效果
+        document.querySelectorAll('.achievement-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // 菜单项悬停效果增强
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.menu-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1.1) rotate(5deg)';
+                }
+            });
+
+            item.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.menu-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1) rotate(0deg)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
